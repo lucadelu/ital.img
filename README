@@ -32,9 +32,12 @@ To create the map of Italy you can run only
       sh italimg.sh 
 
 and it download italian OSM data from geofabrick repository and create the map for 
-Garmin of the whole Italy and one for each region.
+Garmin of the whole Italy and one for each region. The output files are inside 
+output_img folder.
 
-In addition it split the whole Italian osm file in osm file for each Italian region
+In addition it split the whole Italian osm file into osm regional files, 
+they are saved into output_osm_regioni folder
+
 
 To create other region you download the osm file from internet (geofabrick o something else)
 and after you can run
