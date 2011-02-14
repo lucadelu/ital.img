@@ -1,0 +1,143 @@
+# General geocache/routing style by Charlie Ferrero
+# Adapted from Marco Certelli's Driverstyle
+# 
+# Routable types are 0x01-0x13, 0x16, 0x1a, 0x1b
+#
+# ------------------------------------------------
+# ROADS
+# ------------------------------------------------
+# Road_speed: 7=128Km/h, 6=108Km/h, 5=93km/h, 4=72km/h, 3=56km/h, 2=40km/h, 1=20km/h 0=8km/h
+# Road_speed: 7=80mph, 6=70mph, 5=60mph, 4=45mph, 3=35mph, 2=25mph, 1=10mph 0=5mph
+
+# Set highway names to include the reference if there is one
+highway=motorway {name '${ref|highway-symbol:interstate} ${name}' | '${ref|highway-symbol:interstate}' | '${name}' }
+highway=trunk {name '${ref|highway-symbol:hbox} ${name}' | '${ref|highway-symbol:hbox}' | '${name}' }
+highway=primary {name '${ref|highway-symbol:hbox} ${name}' | '${ref|highway-symbol:hbox}' | '${name}' }
+#highway=secondary {name '${ref|highway-symbol:oval} ${name}' | '${ref|highway-symbol:oval}' | '${name}' }
+highway=* {name '${ref} ${name}' | '${ref}' | '${name}' }
+#		"interstate" // US Interstate
+#		"shield" // US Highway shield
+#		"round" // US Highway round
+#		"hbox" // box with horizontal bands
+#		"box"; // Square box
+#		"oval" // box with rounded end
+ 
+# specially tagged roads...
+construction=*  {add access = no}
+surface=unpaved	[0x0a road_class=0 road_speed=0 resolution 24]
+
+# junctions
+junction=roundabout & highway=trunk [0x02 road_class=3 road_speed=5 resolution 16]
+junction=roundabout & highway=primary [0x03 road_class=3 road_speed=4 resolution 18]
+junction=roundabout & highway=secondary [0x04 road_class=2 road_speed=3 resolution 20]
+junction=roundabout & highway=tertiary [0x05 road_class=1 road_speed=3 resolution 20]
+junction=roundabout & highway=unclassified [0x06 road_class=1 road_speed=2 resolution 22]
+junction=roundabout [0x0c road_class=0 road_speed=1 resolution 22]
+
+# Convert generic path to most specific
+highway=path & bicycle=designated {set highway=cycleway }
+highway=path & horse=designated {set highway=bridleway }
+highway=path & foot=designated {set highway=footway }
+
+# motorways 
+highway=motorway {add oneway = yes; add bicycle = no; add foot = no } [0x01 road_class=4 road_speed=6 resolution 12]
+highway=motorway_link {add oneway = yes; add bicycle = no; add foot = no } [0x09 road_class=4 road_speed=3 resolution 16]
+# 0x09 is high-speed
+
+# trunks
+highway=trunk  [0x02 road_class=3 road_speed=5 resolution 16]
+highway=trunk_link [0x09 road_class=3 road_speed=3 resolution 16]
+
+# primaries
+highway=primary [0x03 road_class=3 road_speed=4 resolution 18]
+highway=primary_link [0x08 road_class=3 road_speed=3 resolution 18]
+# 0x08 is low-speed
+
+# secondaries
+highway=secondary [0x04 road_class=2 road_speed=3 resolution 20]
+highway=secondary_link [0x08 road_class=2 road_speed=2 resolution 20]
+
+# tertiaries
+highway=tertiary [0x05 road_class=1 road_speed=3 resolution 20]
+highway=tertiary_link [0x08 road_class=1 road_speed=2 resolution 20]
+
+# unclassified other.
+highway=minor [0x06 road_class=1 road_speed=2 resolution 22]
+highway=unclassified | highway=road [0x06 road_class=1 road_speed=2 resolution 23]
+
+# residential roads
+highway=residential | highway=living_street [0x06 road_class=0 road_speed=2 resolution 23]
+
+# service/alley
+highway=service [0x07 road_class=0 road_speed=1 resolution 22]
+
+# pedestrian / bicycle
+highway=pedestrian & area!=yes {add access = no; add foot = yes} [0x06 road_class=0 road_speed=0 resolution 22]
+
+highway=bridleway {add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
+highway=byway [0x16 road_class=0 road_speed=0 resolution 22]
+highway=cycleway {add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=1 resolution 22]
+highway=footway {add access = no; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
+highway=path {add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 20]
+highway=steps {add access = no; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 24]
+
+highway=track [0x0a road_class=0 road_speed=1 resolution 22]
+highway=unsurfaced [0x0a road_class=0 road_speed=1 resolution 22]
+
+# Mop up any unrecognised highway & roundabout types
+highway=* & area!=yes [0x00 resolution 22]
+
+# ------------------------------------------------
+# RAILWAYS
+# ------------------------------------------------
+railway=rail & tunnel=yes [0x2c resolution 20]
+railway=light_rail & tunnel=yes [0x2c resolution 20]
+#railway=subway [0x14 resolution 20]
+# make railway tunnels a different style, but don't show tube
+
+railway=rail | railway=light_rail [0x14 resolution 20]
+railway=tram [0x14 resolution 20]
+# create a different line-style for trams (maybe the default?)
+
+# ------------------------------------------------
+# ROUTES
+# ------------------------------------------------
+# route=ferry [0x1a road_class=0 road_speed=0 resolution 18]
+
+# ------------------------------------------------
+# WATERWAYS
+# ------------------------------------------------
+waterway=canal [0x1f resolution 20]
+waterway=drain [0x1f resolution 24]
+waterway=river [0x1f resolution 18]
+waterway=stream [0x18 resolution 22]
+
+# ------------------------------------------------
+# BARRIERS
+# ------------------------------------------------
+barrier=hedge | barrier=fence | barrier=wall | barrier=ditch [0x29 resolution 22]
+# 0x29 is the power line type
+
+# ------------------------------------------------
+# BOUNDARIES
+# ------------------------------------------------
+# The following boundary styles are after the highway rules because ways
+# are frequently tagged with both and we want the highway to take priority.
+
+boundary=administrative & admin_level=2 [0x1e resolution 12 default_name='National border']
+# national boundary
+boundary=administrative & admin_level=4 [0x1c resolution 16 default_name='Country border']
+# country/regional boundary
+boundary=administrative & admin_level=6 [0x1d resolution 18 default_name='County border']
+# county boundary
+
+#boundary=political [0x1c resolution 18]
+natural=coastline [0x15 resolution 12]
+
+# ------------------------------------------------
+# OTHER
+# ------------------------------------------------
+aeroway=runway [0x27 resolution 20]
+aerialway=chair_lift | aerialway=gondola | aerialway=cable_car [0x38 resolution 24]
+# power=line [0x29 resolution 20]
+man_made=pipeline	[0x28 resolution 24]

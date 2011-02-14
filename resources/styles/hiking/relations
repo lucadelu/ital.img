@@ -1,0 +1,12 @@
+# Hiking routes
+type=route & (route=foot|route=hiking) {
+  set name='${name} (${ref}) (${operator})' | '${name} (${ref})' | '${name} (${operator})' | '${ref} (${operator})' |'${name}' | '${ref}';
+  apply { set mkgmap:route='$(mkgmap:route),${name}' | '${name}' }
+}
+
+# Other routes
+
+#type=route & (route=bus|route=ferry|route=subway|route=train|route=tram)
+#type=route & route=bicycle
+#type=route & route=road
+#type=route & route=ski

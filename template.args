@@ -1,0 +1,120 @@
+#
+# This file can be given to mkgmap using the -c option
+# Please edit it first to add a description of each map.
+#
+
+# You can set the family id for the map
+# family-id: 980
+# product-id: 1
+
+# Following is a list of map tiles.  Add a suitable description
+# for each one.
+
+mapname: 63240001
+description: OSM Map
+input-file: 63240001.osm.gz
+
+mapname: 63240002
+description: OSM Map
+input-file: 63240002.osm.gz
+
+mapname: 63240003
+description: OSM Map
+input-file: 63240003.osm.gz
+
+mapname: 63240004
+description: OSM Map
+input-file: 63240004.osm.gz
+
+mapname: 63240005
+description: OSM Map
+input-file: 63240005.osm.gz
+
+mapname: 63240006
+description: OSM Map
+input-file: 63240006.osm.gz
+
+mapname: 63240007
+description: OSM Map
+input-file: 63240007.osm.gz
+
+mapname: 63240008
+description: OSM Map
+input-file: 63240008.osm.gz
+
+mapname: 63240009
+description: OSM Map
+input-file: 63240009.osm.gz
+
+mapname: 63240010
+description: OSM Map
+input-file: 63240010.osm.gz
+
+mapname: 63240011
+description: OSM Map
+input-file: 63240011.osm.gz
+
+mapname: 63240012
+description: OSM Map
+input-file: 63240012.osm.gz
+
+mapname: 63240013
+description: OSM Map
+input-file: 63240013.osm.gz
+
+mapname: 63240014
+description: OSM Map
+input-file: 63240014.osm.gz
+
+mapname: 63240015
+description: OSM Map
+input-file: 63240015.osm.gz
+
+mapname: 63240016
+description: OSM Map
+input-file: 63240016.osm.gz
+
+mapname: 63240017
+description: OSM Map
+input-file: 63240017.osm.gz
+
+mapname: 63240018
+description: OSM Map
+input-file: 63240018.osm.gz
+
+mapname: 63240019
+description: OSM Map
+input-file: 63240019.osm.gz
+
+mapname: 63240020
+description: OSM Map
+input-file: 63240020.osm.gz
+
+mapname: 63240021
+description: OSM Map
+input-file: 63240021.osm.gz
+
+mapname: 63240022
+description: OSM Map
+input-file: 63240022.osm.gz
+
+mapname: 63240023
+description: OSM Map
+input-file: 63240023.osm.gz
+
+mapname: 63240024
+description: OSM Map
+input-file: 63240024.osm.gz
+
+mapname: 63240025
+description: OSM Map
+input-file: 63240025.osm.gz
+
+mapname: 63240026
+description: OSM Map
+input-file: 63240026.osm.gz
+
+mapname: 63240027
+description: OSM Map
+input-file: 63240027.osm.gz
+

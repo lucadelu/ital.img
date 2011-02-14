@@ -1,0 +1,426 @@
+General options:
+
+--help=topic
+	Print help on the given topic.  If the topic is omitted then a
+	list of all the help topics is printed instead.
+
+--version 
+	Output program version.
+
+filename
+--input-file=filename
+	Read input data from the give file.  This option (or just a
+	filename) may be given more than once.
+
+--gmapsupp
+	Write a gmapsupp.img file that can be uploaded to a Garmin or
+	placed in "/Garmin" in a microSD card (such as by mounting the
+	device in USB mass storage mode).
+	TODO: explain if this is in addition to or instead of the
+	per-input files.
+
+-c filename
+--read-config=filename
+	The given file is opened and each line is an option setting of
+	the form option=value, any option that could be used on the command
+	line can be used, however you omit the leading '--'.  The short
+	option names with a single '-' cannot be used, simply use the
+	long name instead.
+
+-n name
+--mapname=name
+	Set the name of the map. Garmin maps are named by 8 digit
+	numbers.  The default is 63240001.  It is best to use a different
+	name if you are going to be making a map for others to use so
+	that it is unique and does not clash with others.
+
+--description=text
+	Sets the descriptive text for the map. This may be displayed in
+	QLandkarte, MapSource on on a GPS etc, where it is normally shown
+	below the family name. Example: --description="Germany, Denmark"
+	Please note: if you use splitter.jar to build a template.args file
+	and use -c template.args, then that file may contain a
+	"description" that will override this option. Use "--description" in
+	splitter.jar to change the description in the template.args file.
+
+--country-name=name
+	Sets the map's country name. The default is "COUNTRY".
+
+--country-abbr=abbreviation
+	Sets the map's abbreviated country name. The default is "ABC".
+
+--region-name=name
+	Sets the map's region name. By default, the map has no region name.
+
+--region-abbr=abbreviation
+	Sets the map's abbreviated region name. By default, the map has
+	no abbreviated region name.
+
+Label options:
+
+--charset=name
+	This option allows the use of non-ascii characters in street
+	names. It is hardware dependant what is actually supported on
+	a particular device. Some devices can only do ascii characters
+	for example.
+
+	Mkgmap goes to some length to convert un-displayable characters
+	however and by default (without this option) it will transliterate
+	characters to unaccented ascii characters where possible.
+
+--latin1
+	This is equivalent to --charset=latin1.
+
+--code-page=number
+	TODO: is one really supposed to give two single quotes?
+	Write the given code page number to the header of the LBL file. 
+	Some examples on the mailing list use --code-page=1252.
+	TODO: explain what this does, and why one would or would not want
+	to do it.
+
+--lower-case
+	Allow labels to contain lower case letters.  Note that this
+	doesn't work on many (most, all?) Garmin devices.
+
+Style options:
+
+--style=name
+	Specify a different style name, rather than the default value
+	(which is the word default).
+
+--style-file=file
+	Specify an external file to obtain the style from.  "file" can
+	be a directory containing files such as info, lines, options
+	(see resources/styles/default for an example).  The directory
+	path must be absolute or relative to the current working
+	directory when mkgmap is invoked.
+
+	The file can be a zip file instead of a directory.  TODO-check
+	this: In this case, the zip file should contain directories
+	with styles, and the style 'default' will be used, unless the
+	--style option is also given to select a different one.
+
+	The argument can also be a URL, in which case TODO.
+
+	For backward compatibility, you can also supply a
+	map-features.csv file here.  See the customisation help.
+
+--list-styles
+	List the available styles.
+
+--levels=levels code
+	Change the way that the levels on the map correspond to the zoom
+	levels in the device. See customisation help. The default is:
+	"0=24, 1=22, 2=20, 3=18, 4=16, 5=15", although each style can have
+	its own default.
+
+--name-tag-list
+	Get the tag that will be used to supply the name.  Useful for
+	language variations.  You can supply a list and the first one
+	will be used.  eg. --name-tag-list=name:en,int_name,name
+
+--map-features=file
+	This option is obsolete; use the --style-file option instead.
+
+Product description options:
+
+--family-id
+	This is an integer that identifies a family of products.
+
+--family-name
+	If you build several maps, this option describes the
+	family name of all of your maps. Garmin will display this
+	in the map selection screen.
+	Example: --family-name="OpenStreetmap mkgmap XL 2019"
+	TODO: at least the "-" character seems to have a strange
+	effect on the family name; latin-alphabet and digits seem
+	safe, but other characters should be checked.
+
+--product-id
+	This is an integer that identifies a product within a family.
+	It is often just 1.
+
+--series-name
+	This name will be displayed in MapSource in the map selection
+	drop-down. The default is "OSM map".
+
+--area-name
+
+--overview-mapname=name
+	If --tdbfile is enabled, this gives the name of the overview
+	.img and .tdb files. The default map name is osmmap.
+
+--nsis
+	Write a .nsi file that can be used with the Nullsoft Scriptable Install System
+	(NSIS) to create a Windows Mapsource Installer.
+
+--overview-mapnumber=8 digit number
+	If --tdbfile is enabled, this gives the internal 8 digit
+	number used in the overview map and tdb file.  The default
+	number is 63240000.
+	
+
+Optimization options:
+
+--reduce-point-density=NUM
+	Simplifies the ways with the Douglas Peucker algorithm.
+	NUM is the maximal allowed error distance, by which the resulting
+	way may differ from the original one.
+	This distance gets shifted with lower zoom levels. 
+	Recommended setting is 10, this should lead to only small differences
+	(Default is 2.6, which should lead to invisible changes) 
+
+--merge-lines
+	Try to merge lines. This helps the simplify filter to straighten out
+	longer chunks at lower zoom levels. Decreases file size more.
+	Increases paint speed at low zoom levels.
+
+Miscellaneous options:
+
+--max-jobs[=number]
+	When number is specified, allow that number of maps to be
+	processed concurrently. If number is not specified, the limit
+	is set equal to the number of CPU cores. If this option is not
+	given at all, the limit is 1 (i.e., the maps are processed
+	sequentially).
+
+--keep-going
+	Don't quit whole application if an exception occurs while
+	processing a job - continue to process the other jobs.
+
+--block-size=number
+	Changes the block size that is used in the generated map.
+	TODO: explain what this meant
+	Use of this option is not recommended.
+
+--net
+	Create maps that supports the "lock to road" option.
+
+--route
+	Experimental: Create maps that support routing.  This implies --net
+	(so that --net need not be given if --route is given).
+
+--drive-on-left
+--drive-on-right
+	Explicitly specify which side of the road vehicles are
+	expected to drive on. If neither of these options are
+	specified, it is assumed that vehicles drive on the right
+	unless --check-roundabouts is specified and the first
+	roundabout processed is clockwise.
+
+--check-roundabouts
+	Check that roundabouts have the expected direction (clockwise
+	when vehicles drive on the left). Roundabouts that are complete
+	loops and have the wrong direction are reversed. Also checks
+	that the roundabouts do not fork or overlap other roundabouts.
+
+--check-roundabout-flares
+	Sanity check roundabout flare roads - warn if they don't point
+	in the correct direction or if they are not oneway or if they
+	extend too far.
+
+--max-flare-length-ratio=NUM
+	When checking flare roads, ignore roads whose length is
+	greater than NUM (an integer) times the distance between the
+	nodes on the roundabout that the flare roads connect to. Using
+	this option with a value of at least 5 will cut down the
+	number of legitimate roads that are flagged as flare road
+	problems. Default value is 0 (disabled) because it's not a
+	completely reliable heuristic.
+
+--ignore-maxspeeds
+	When reading OSM files, ignore any "maxspeed" tags.
+
+--ignore-turn-restrictions
+	When reading OSM files, ignore any "restriction" relations.
+
+--process-boundary-relations
+	When reading OSM files, boundary relations are processed. By default
+	they are not processed because most of the boundary relations are 
+	incomplete due to splitting of OSM files. When processing these
+	incomplete multipolygons additional artificial boundary lines are 
+	created on the tile bounds. 
+
+--ignore-osm-bounds
+	When reading OSM files, ignore any "bounds" elements.
+	With this option selected generate-sea sometimes works better,
+	but routing across tiles will not work.
+
+--preserve-element-order
+	Process the map elements (nodes, ways, relations) in the order
+	in which they appear in the OSM input. Without this option,
+	the order in which the elements are processed is not defined.
+
+--remove-short-arcs[=MinLength]
+	Merge nodes to remove short arcs that can cause routing
+	problems. If MinLength is specified (in metres), arcs shorter
+	than that length will be removed. If a length is not
+	specified, only zero-length arcs will be removed.
+
+--adjust-turn-headings[=BITMASK]
+	Where possible, ensure that turns off to side roads change
+	heading sufficiently so that the GPS believes that a turn is
+	required rather than a fork. This also avoids spurious
+	instructions to "keep right/left" when the road doesn't
+	actually fork.
+
+	Optional BITMASK (default value 3) allows you to specify which
+	adjustments are to be made (where necessary):
+
+	1 = increase angle between side road and outgoing main road
+	2 = increase angle between side road and incoming main road
+
+
+--report-similar-arcs
+	Issue a warning when more than one arc connects two nodes and
+	the ways that the arcs are derived from contain identical
+	points. It doesn't make sense to use this option at the same
+	time as using the cycleway creating options.
+
+--report-dead-ends=LEVEL
+	Set the dead end road warning level. The value of LEVEL (which
+	defaults to 1 if this option is not specified) determines
+	those roads to report: 0 = none, 1 = multiple oneway roads
+	that join together but go nowhere, 2 = individual oneway roads
+	that go nowhere.
+
+--report-undefined-nodes
+	Issue a warning when a way references an undefined node.
+
+--road-name-pois[=GarminCode]
+	Generate a POI for each named road. By default, the POIs'
+	Garmin type code is 0x640a. If desired, a different type code
+	can be specified with this option.  This is a workaround for not
+	being able to search for roads.
+	0x2f15: a blue dot in the middle of the road, and if you select,
+		or 'hover' over it, the streetname appears.
+	
+--add-pois-to-areas
+	Generate a POI for each area. The POIs are created after the
+	style is applied and only for polygon types that have a
+	reasonable point equivalent.
+
+--generate-sea[=ValueList]
+	Generate sea polygons. ValueList is an optional comma
+	separated list of values:
+
+	multipolygon
+		generate the sea using a multipolygon (the default
+		behaviour so this really doesn't need to be specified).
+
+	polygons | no-mp
+		don't generate the sea using a multipolygon - instead,
+		generate a background sea polygon plus individual land
+		polygons with tag natural=land. This requires a
+		suitable land polygon type to be defined in the style
+		file (suggested type is 0x010100) and the polygon must
+		be defined in the TYP file as having a higher drawing
+		level than the sea polygon type.
+
+	no-sea-sectors
+		disable the generation of "sea sectors" when the
+		coastline fails to reach the tile's boundary.
+		
+	extend-sea-sectors
+	  same as no-sea-sectors. Additional adds a point so 
+	  coastline reaches the nearest tile boundary.
+
+	land-tag=TAG=VAL
+		tag to use for land polygons (default natural=land).
+
+	close-gaps=NUM
+		close gaps in coastline that are less than this
+		distance (metres)
+
+--make-poi-index
+	Generate the POI index (not yet useful).
+
+--index
+	Generate a global index that can be used with MapSource.
+	Makes the find places functions in MapSource available.
+	The index consists of two files named osmmap.mdx and osmmap_mdr.img
+	by default.  The overview-mapname can be used to change the name.
+	If the mapset is sent to the device from MapSource, it will enable
+	find by name and address search on the GPS.
+
+	This is an experimental option and there are several unresolved
+	issues.
+
+--make-all-cycleways
+	Turn on all of the options that make cycleways.
+
+--make-opposite-cycleways
+	Some oneway streets allow bicycle traffic in the reverse
+	direction and this option makes a way with the same points as
+	the original that allows bicycle traffic (in both directions).
+
+--make-cycleways
+	Some streets have a separate cycleway track/lane just for
+	bicycle traffic and this option makes a way with the same
+	points as the original that allows bicycle traffic. Also,
+	bicycle traffic is prohibited from using the original way
+	(unless that way's bicycle access has been defined).
+
+--link-pois-to-ways
+	If this option is enabled, POIs that are situated at a point
+	in a way will be associated with that way and may modify the
+	way's properties. Currently supported are POIs that restrict
+	access (e.g. bollards). Their access restrictions are applied
+	to a small region of the way near the POI.
+
+--delete-tags-file=FILENAME
+	Names a file that should contain one or more lines of the form
+	TAG=VALUE or TAG=*. Blank lines and lines that start with
+	# or ; are ignored. All tag/value pairs in the OSM input are
+	compared with these patterns and those that match are deleted.
+
+--tdbfile
+	Write a .tdb file.
+
+--show-profiles=1
+	Sets a flag in tdb file which marks set mapset as having contour 
+	lines and allows showing profile in MapSource. Default is 0 
+	which means disabled. 
+
+--draw-priority=25
+	When two maps cover the same area, this option controls what
+	order they are drawn in and therefore which map is on top of
+	which.  Higher priorities are drawn "on top" of lower
+	priorities.
+
+--transparent
+	Make the map transparent, so that if two maps are loaded that
+	cover the same area, you can see through this map and see the
+	lower map too.  Useful for contour line maps among other
+	things.
+
+--no-poi-address
+	Disable address / phone information to POIs. Address info is
+	read according to the "Karlsruhe" tagging schema. Automatic
+	filling of missing information could be enabled using the
+	"location-autofill" option.
+
+--no-sorted-roads
+	Suppress the normal generation of sorted road data. This will
+	make the map quicker to build but the find address or
+	intersection functions will be lost.
+
+--location-autofill=''number''
+	Controls how country region info is gathered for cities /
+	streets and pois
+
+	0 	(Default) The country region info is gathered by
+		analysis of the cities is_in tags.
+
+		If no country region info is present the default
+		passed default country region is used.
+		 
+	1	Additional analysis of partial is_in info to get
+		relations between hamlets and cities
+	
+	2	Brute force search for nearest city with info if all
+		methods before failed. Warning cities my end up in the
+		wrong country/region.
+		
+	3	Enables debug output about suspicious relations that
+		might cause wrong country region info

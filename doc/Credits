@@ -1,0 +1,65 @@
+
+General
+-------
+This project is almost entirely based on the file format specification
+document written by John Mechalas at the SourceForge project at
+http://sourceforge.net/projects/garmin-img.  The 'imgdecode' program
+from the same source was also very important in checking that I was
+on the right lines to producing a correct file.
+
+Routing
+-------
+Alexander Atanasov and his libgarmin project
+Robert Vollmert
+Mark Burton: adding .osm support
+Johann Gail, Bernhard Heibler
+
+POI support
+-----------
+Bernhard Heibler: support for filling in address, phone etc information
+into POI based on tags in the .osm file.
+Also automatically finding city information by various means including
+searching for the nearest city to a point.  Uses openGeoDB tags if present.
+
+Ben Konrath: Creating POIs for areas.
+
+Code patches
+------------
+Robert Vollmert:
+ - reading and changes to writing of "format-6" labels
+
+Elrond:
+ - put map names into the TDB file
+ - writing out section info
+ - POI support
+
+Rene_A:
+ - Multipolygon relation support
+
+Map features
+------------
+The original map features file was based on the files in OSMGarminMap
+by Jochen Topf.  The current file was also created by Jochen Topf.
+
+Additions have been made by a number of people notably by:
+Elrond, Roozbeh, Computerteddy
+
+Documentation
+-------------
+The man page was written by Andreas Putzo
+
+
+Packaging
+---------
+Debian - Andreas Putzo
+
+
+Internationalisation
+--------------------
+Tomi B:
+ - idea for transliteration of non-ascii characters and testing of the Czech letters.
+
+Liosha:
+ - Russian transliteration.
+
+

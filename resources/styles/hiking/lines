@@ -1,0 +1,92 @@
+boundary=national [0x1e resolution 17]
+
+# Contours take their name from the elevation setting.
+# contour=elevation | contour_ext=elevation
+#	{ name '${ele|conv:m=>ft}'; }
+#	[0x21 resolution 19]
+
+# NOMI E REF
+#highway=motorway {name '${ref|highway-symbol:hbox} ${name}' | '${ref|highway-symbol:hbox}' | '${name}' }
+#highway=trunk {name '${ref|highway-symbol:hbox} ${name}' | '${ref|highway-symbol:hbox}' | '${name}' }
+#highway=primary {name '${ref|highway-symbol:box} ${name}' | '${ref|highway-symbol:box}' | '${name}' }
+#highway=secondary {name '${ref|highway-symbol:oval} ${name}' | '${ref|highway-symbol:oval}' | '${name}' }
+#highway=* {name '${ref} ${name}' | '${ref}' | '${name}' }
+
+# RENDERING SPECIFICI
+highway=footway {name '${ref|highway-symbol:oval}' | '${name}' }
+highway=footway {name '${ref|highway-symbol:oval}' | '${name}' }
+highway=track {name '${ref|highway-symbol:oval}' | '${name}' }
+
+# ROUTE
+highway=* & mkgmap:route=* { name '${mkgmap:route}' } [0x01 road_class=4 road_speed=4 resolution 16]
+
+
+# CONVERTE PATH
+highway=path & bicycle=designated {set highway=cycleway }
+highway=path & horse=designated {set highway=bridleway }
+highway=path & foot=designated {set highway=footway }
+highway=path { set highway=footway }
+
+# ROTATORIE
+junction=roundabout & highway=trunk [0x06 road_class=0 road_speed=0 resolution 20]
+junction=roundabout & highway=primary [0x06 road_class=0 road_speed=0 resolution 22]
+junction=roundabout & highway=secondary [0x06 road_class=1 road_speed=2 resolution 22]
+junction=roundabout & highway=tertiary [0x06 road_class=1 road_speed=2 resolution 22]
+junction=roundabout & highway=unclassified [0x06 road_class=1 road_speed=2 resolution 22]
+junction=roundabout [0x06 road_class=0 road_speed=1 resolution 22]
+
+# PERCORSI
+highway=bridleway {add access = no; add bicycle = yes; add foot = yes} [0x04 road_class=3 road_speed=2 resolution 16 default_name 'Percorso per cavalli']
+highway=byway [0x04 road_class=3 road_speed=2 resolution 16 default_name 'Percorso']
+highway=cycleway {add access = no; add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=5 resolution 16 default_name 'Percorso ciclabile']
+highway=footway {add access = no; add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
+highway=path {add access = no; add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
+highway=footway & bicycle=yes {add access = no; add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
+
+# STRADE
+highway=motorway {add oneway = yes; add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Autostrada']
+highway=motorway_link {add oneway = yes; add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Autostrada']
+highway=trunk  {add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Superstrada']
+highway=trunk_link {add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Superstrada']
+highway=primary [0x06 road_class=0 road_speed=0 resolution 22 default_name 'Strada']
+highway=primary_link [0x06 road_class=0 road_speed=0 resolution 22 default_name 'Strada']
+highway=secondary [0x06 road_class=0 road_speed=0 resolution 22 default_name 'Strada']
+highway=tertiary [0x06 road_class=1 road_speed=2 resolution 22 default_name 'Strada']
+highway=unclassified [0x06 road_class=1 road_speed=2 resolution 22 default_name 'Strada']
+highway=residential | highway=living_street [0x06 road_class=1 road_speed=2 resolution 22 default_name 'Strada']
+highway=minor [0x06 road_class=1 road_speed=2 resolution 22 default_name 'Strada']
+highway=road [0x06 road_class=1 road_speed=2 resolution 22 default_name 'Strada']
+highway=service [0x06 road_class=1 road_speed=1 resolution 22 default_name 'Strada']
+highway=steps {add access = no; add foot = yes} [0x16 road_class=4 road_speed=3 resolution 22 default_name 'Strada']
+highway=unsurfaced [0x0a road_class=1 road_speed=1 resolution 22 default_name 'Strada']
+
+highway=pedestrian & area!=yes {add access = no; add foot = yes} [0x04 road_class=5 road_speed=5 resolution 20]
+# Mop up any unrecognised highway types
+highway=* & area!=yes [0x07 ]
+
+highway=track & tracktype=grade1 [0x1d road_class=4 road_speed=4 resolution 16  default_name 'Strada sterrata']
+highway=track & tracktype=grade2 [0x1d road_class=3 road_speed=3 resolution 16  default_name 'Strada sterrata']
+highway=track & tracktype=grade3 [0x1c road_class=3 road_speed=2 resolution 16  default_name 'Sterrato']
+highway=track & tracktype=grade4 [0x1c road_class=2 road_speed=2 resolution 16  default_name 'Sterrato']
+highway=track & tracktype=grade5 [0x1c road_class=2 road_speed=2 resolution 16  default_name 'Sterrato']
+highway=track [0x1d road_class=3 road_speed=3 resolution 16 default_name 'Sterrato']
+
+natural=coastline [0x15 resolution 12]
+#power=line [0x29 resolution 20]
+
+railway=light_rail [0x14 resolution 17]
+railway=rail [0x14 resolution 17]
+railway=subway [0x14 resolution 17]
+railway=tram [0x14 resolution 18]
+
+#Imianti risalita
+aerialway=chair_lift[0x1a resolution 20]
+aerialway=drag_lift[0x1a resolution 20]
+aerialway=cable_car[0x1a resolution 20]
+
+#route=ferry [0x1a road_class=0 road_speed=0 resolution 18]
+
+#waterway=canal [0x1f resolution 20]
+#waterway=drain [0x1f resolution 20]
+#waterway=river [0x1f resolution 17]
+#waterway=stream [0x1f resolution 17]

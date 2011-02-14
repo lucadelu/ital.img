@@ -1,0 +1,11 @@
+# The levels specification for this style
+#
+levels = 0:24, 1:23, 2:22, 3:20, 4:18, 5:16
+
+# At normal detail level:
+# 24:  >=500ft
+# 23:  800ft in GPS, 0.3 miles (MapSource)
+# 22: 0.3 miles in GPS, 0.5 miles (MapSource)
+# 21: ?
+# 20: 1.2 miles in GPS, 2 miles (MapSource)
+# 18: ? in GPS, 7 miles (MapSource)

@@ -1,0 +1,10 @@
+version: 1
+
+summary: Map for contours
+
+# This uses the default style as a base
+base-style: contours
+
+description {
+	This style is to help to create contours map.
+}

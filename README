@@ -1,0 +1,42 @@
+
+(c) Copyright Luca Delucchi - 2011
+
+ital.img is licensed under the terms of GNU GPL 2
+    Read LICENSE for more info
+
+
+Making Italian and other maps for Garmin GPS units
+==================================================
+
+ital.img is a free software to create map for Garmin GPS units using mkgmap
+
+ital.img is developed to create Italian maps but it is possible to create also 
+other countries
+
+Dipendences
+============
+
+This program requires Java 1.6 or above to run.
+
+First download the map of contour lines for Garmin from 
+
+      ftp://ftp5.gwdg.de/pub/misc/openstreetmap/openmtbmap/contourlines/openmtbmap_it_srtm.zip
+
+and put it inside "openmtbmap_it_srtm" folder.
+
+How to use
+==========
+
+To create the map of Italy you can run only 
+
+      sh italimg.sh 
+
+and it download italian OSM data from geofabrick repository and create the map for 
+Garmin of the whole Italy and one for each region.
+
+In addition it split the whole Italian osm file in osm file for each Italian region
+
+To create other region you download the osm file from internet (geofabrick o something else)
+and after you can run
+
+      sh other_nation.sh "name_of_file_without_.osm"

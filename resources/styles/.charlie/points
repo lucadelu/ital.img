@@ -1,0 +1,278 @@
+# General geocache/routing style by Charlie Ferrero
+# with inspirations from openmtbmap.org
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Corrections
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+elevation=* { add ele='${elevation}' }
+opening_hours=* {set addr:city = '${addr:city} open ${opening_hours}' | 'open ${opening_hours}'}
+
+# ------------------------------------------------
+# AIR
+# ------------------------------------------------
+aeroway=airport 						[0x2f04 resolution 20] 
+aeroway=aerodrome | aeroway=terminal 	[0x2f04 resolution 22]
+
+# ------------------------------------------------
+# AMENITIES
+# ------------------------------------------------
+amenity=place_of_worship & religion=christian 	[0x2c0b resolution 24]
+amenity=place_of_worship & religion=muslim 		[0x2c0c resolution 24]
+amenity=place_of_worship & religion=jewish 		[0x2c0d resolution 24]
+amenity=place_of_worship 						[0x2c0b resolution 24]
+amenity=recycling  								[0x2f15 resolution 20]
+
+amenity=school 									[0x2c05 resolution 24 default_name 'School']
+
+#amenity=police [0x3001 resolution 20]
+#amenity=post_office [0x2f05 resolution 20]
+#amenity=telephone [0x5100 resolution 20 default_name 'Telephone']
+
+# ------------------------------------------------
+# AUTO
+# ------------------------------------------------
+amenity=fuel & shop=* {name '${name} + shop' | '${operator} + shop'} 	[0x2e06 resolution 20]
+amenity=fuel { name '${name}' | '${operator}' } 						[0x2f01 resolution 20]
+amenity=parking 														[0x2f0b resolution 23]
+amenity=car_wash 														[0x2f0e resolution 23]
+
+highway=motorway_junction { name '${ref} ${name}' | '${ref}' | '${name}' } [0x2000 resolution 22]
+highway=services { name '${ref} ${name}' | '${ref}' | '${name}' } 		[0x210f resolution 22]
+highway=traffic_signals 												[0x7010 resolution 24]
+
+highway=mini_roundabout 												[0x3201 resolution 24]
+
+#highway = crossing [ resolution 24]
+#highway = stop [0x7011 resolution 24]
+#shop=car_repair [0x2f03 resolution 20]
+
+# ------------------------------------------------
+# BARRIERS
+# ------------------------------------------------
+amenity=border_control | barrier=border_control 	[0x3006 resolution 18]
+
+barrier=toll_booth 									[0x2500 resolution 22]
+
+# cope with locked gate variants
+barrier=gate & (foot=no | access=no | status=locked | locked=yes | gate=locked | state=locked) {add mkgmap:locked=yes}
+barrier=gate & mkgmap:locked=yes 					[0x2f00 resolution 23 default_name 'Gate(!)']
+barrier=gate & (access=private | access=permissive) [0x2f00 resolution 23 default_name 'Gate(~)']
+
+barrier=gate | barrier=kissing_gate 				[0x2f00 resolution 23 default_name 'Gate']
+barrier=stile 										[0x2f00 resolution 23 default_name 'Stile']
+#note was 0x2f10
+
+# ------------------------------------------------
+# FOOD & DRINK
+# ------------------------------------------------
+# cope with internet-enabled cafes
+amenity=cafe & internet_access=wlan {name '${name} (wifi)'} [0x2a14 resolution 23]
+amenity=cafe & (internet_access=public | internet_access=yes) {name '${name} (internet)'} [0x2a14 resolution 23]
+amenity=cafe | cuisine=coffee_shop [0x2a0e resolution 23]
+
+amenity=restaurant & cuisine=american					[0x2a01 resolution 23]
+amenity=restaurant & (cuisine=asian | cuisine=japanese | cuisine=korean | cuisine=malaysian | cuisine=noodle | cuisine=thai | cuisine=vietnamese)[0x2a02 resolution 23]
+amenity=restaurant & cuisine=barbecue 					[0x2a03 resolution 23]
+amenity=restaurant & cuisine=chinese 					[0x2a04 resolution 23]
+amenity=restaurant & cuisine=deli 						[0x2a05 resolution 23]
+amenity=restaurant & (cuisine=arabian | cuisine=african | cuisine=european | cuisine=greek | cuisine=international | cuisine=lebanese | cuisine=mediterranean |cuisine=regional | cuisine=spanish )[0x2a06 resolution 23]
+amenity=fast_food | cuisine=burger | cuisine=chicken | cuisine=fish_and_chips | cuisine=ice_cream | cuisine=kebab | cuisine=pie | cuisine=sandwich | cuisine=sub [0x2a07 resolution 23]
+amenity=restaurant & (cuisine=pizza | name ~ '.*pizza.*') [0x2a0a resolution 23]
+#placed before italian to avoid Pizza Hut being classified as Italian
+amenity=restaurant & (cuisine=italian | cuisine=pasta)	[0x2a08 resolution 23]
+amenity=restaurant & cuisine=mexican 					[0x2a09 resolution 23]
+
+amenity=restaurant & (cuisine=seafood | cuisine=fish | cuisine=sushi) [0x2a0b resolution 23]
+amenity=restaurant & (cuisine=grill | cuisine=steak | cuisine=steak_house | cuisine=gaucho) [0x2a0c resolution 23]
+amenity=restaurant & (cuisine=bagel | cuisine = donut) 	[0x2a0d resolution 23]
+amenity=restaurant & cuisine=french 					[0x2a0f resolution 23]
+amenity=restaurant & (cuisine=german | cuisine=bavarian)[0x2a10 resolution 23]
+amenity=restaurant & cuisine=british 					[0x2a11 resolution 23]
+shop=deli												[0x2a12 resolution 23]
+amenity=restaurant & cuisine=indian						[0x2a13 resolution 23]
+amenity=restaurant 										[0x2a15 resolution 23]
+
+amenity=drinking_water 									[0x5000 resolution 23]
+amenity=pub | amenity=biergarten | amenity=bar 			[0x2d02 resolution 23]
+
+# ------------------------------------------------
+# HEALTH & SAFETY
+# ------------------------------------------------
+amenity=toilets 								[0x2f0c resolution 23]
+amenity=doctors | amenity=hospital 				[0x3002 resolution 22]
+amenity=dentist 								[0x3002 resolution 23]
+amenity=emergency_phone 						[0x5100 resolution 22]
+
+
+# ------------------------------------------------
+# INFORMATION
+# ------------------------------------------------
+information=map 		{name '${name} - ${map_type} - ${description}' |'${name} - ${description}' | '${map_type} - ${description}' | '${name}' | '${description}' | '${map_type}' | '${ref}' } 	[0x4c01 resolution 23 default_name 'Infomap']
+information=guidepost 	{name '${name} - ${operator} - ${description} '| '${name} - ${description}' | '${name}' | '${description}' | '${operator}' | '${ref}' } 							[0x4c02 resolution 23 default_name 'Infopost']
+information=board 		{name '${name} - ${board_type} - ${description}' | '${name} - ${description}' | '${board_type} - ${description}' | '${name}' | '${description}' | '${board_type}' | '${ref}' } [0x4c03 resolution 23 default_name 'Infoboard']
+tourism=information {name '${name} - ${description} - ${operator}'| '${name} - ${description}' | '${name}' | '${description}' | '${operator}' | '${ref}' } 								 [0x4c00 resolution 23]
+
+# ------------------------------------------------
+# MAN_MADE LANDMARKS
+# ------------------------------------------------
+man_made=lighthouse 			[0x160f resolution 22]
+man_made=power_wind  			[0x6405 resolution 22]
+man_made=water_tower 			[0x640a resolution 22]
+man_made=survey_point {name '${name}: ${ele}m' | 'Survey point: ${ele}m'} [0x640f resolution 23]
+man_made=tower 					[0x6411 resolution 23]
+man_made=windmill 				[0x6418 resolution 22]
+man_made=observatory 			[0x6413 resolution 23] 
+
+# ------------------------------------------------
+# MAN-MADE FEATURES - HISTORICAL
+# ------------------------------------------------
+historic=castle & historic!=ruins {name '${name}'} 			[0x2c11 resolution 23]
+historic=archaeological_site | historic=archeological_site 	[0x2c0e resolution 23]
+historic=boundary_stone 									[0x5a00 resolution 24 default_name 'Boundary stone']
+historic=memorial | historic=monument {name '${name}'} 		[0x6417 resolution 24]
+historic=ruins 												[0x6419 resolution 23]
+
+# ------------------------------------------------
+# MAN-MADE FEATURES - OTHER
+# ------------------------------------------------
+amenity=fountain 											[0x4a02 resolution 24]
+amenity=grave_yard 											[0x6403 resolution 23]
+
+# ------------------------------------------------
+# MONEY
+# ------------------------------------------------
+amenity=atm { name '${operator}: ${name}' | '${name}' | '${operator}' } [0x2f06 resolution 22 default_name 'ATM']
+amenity=bank { name '${name} (${operator})' | '${name}' | '${operator}' } [0x2f06 resolution 22]
+
+# ------------------------------------------------
+# NATURAL FEATURES
+# ------------------------------------------------
+# water-based
+natural=reef																[0x6502 resolution 22 default_name 'Reef']
+natural=waterfall & name=*													[0x6508 resolution 22]
+waterway=waterfall & name=*													[0x6508 resolution 22]
+natural=geyser																[0x6509 resolution 22 default_name 'Geyser']
+natural=spring																[0x6511 resolution 23 default_name 'Spring']
+natural=strait																[0x1e00 resolution 12]
+natural=sea																	[0x1400 resolution 12]
+
+#land-based
+natural=beach & name=*														[0x6604 resolution 23]
+natural=cave_entrance & name=*												[0x6608 resolution 23]
+natural=peak & ele ~'[\d\s]*m' {name '${name} (${ele})' | 'Peak (${ele})'} 	[0x6616 resolution 20] 
+natural=peak & ele ~'[\d\s]*ft' {name '${name} (${ele})'| 'Peak (${ele})'} 	[0x6616 resolution 20]
+natural=peak {name '${name} (${ele}m)' | 'Peak (${ele}m)' | '${name}' } 	[0x6616 resolution 20] 
+natural=volcano 															[0x6616 resolution 20 default_name 'Volcano']
+natural=tree & name=*														[0x6618 resolution 23]
+natural=forest & name=*														[0x660a resolution 23]
+natural=dune {name '${name} (%{ele})' | '${name}' }							[0x660f resolution 20 default_name 'Dune']
+
+
+
+# ------------------------------------------------
+# PLACES
+# ------------------------------------------------
+place=capitol | place=capital						[0x0100 resolution 16]
+place=city											[0x0700 resolution 16]
+place=town											[0x0800 resolution 18]
+place=village										[0x0b00 resolution 20]
+place=hamlet										[0x0d00 resolution 23]
+
+place=country										[0x1400 resolution 12]
+place=region & population > 1000000 				[0x1400 resolution 16] 
+place=state 										[0x1400 resolution 16]
+place=county & population > 500000 					[0x1400 resolution 16]
+place=island										[0x1e00 resolution 18]
+place=suburb | place=municipality | place=district	[0x1e00 resolution 20]
+place=locality										[0x1e00 resolution 24]
+
+# building=yes & name=*								[0x6402 resolution 23]
+
+
+# ------------------------------------------------
+# SHOPPING
+# ------------------------------------------------
+
+shop=department_store | shop=mall 					[0x2e01 resolution 23]
+shop=greengrocer | shop=organic | shop=grocery		[0x2e02 resolution 23]
+shop=convenience 									[0x2e03 resolution 23]
+shop=supermarket | shop=hypermarket					[0x2e04 resolution 23]
+shop=chemist | amenity=pharmacy						[0x2e05 resolution 23 default_name 'Chemist']
+shop=clothes | shop=outdoor 						[0x2e07 resolution 23]
+shop=furniture										[0x2e09 resolution 23]
+shop=butcher 										[0x2e0a resolution 23] 
+shop=alcohol | shop=beverages 						[0x2e0c resolution 23 default_name 'Booze']
+shop=books 											[0x2e0d resolution 23]
+shop=bakery | shop=bakers | shop=baker				[0x2e0e resolution 23]
+shop=newsagent 										[0x2e0f resolution 23]
+shop=kiosk & name!=* {name 'Kiosk'}					[0x2e00 resolution 23]
+shop=car											[0x2f07 resolution 23]
+# check this is the right tag to match
+
+shop=* | amenity=marketplace						[0x2e00 resolution 23]
+
+# ------------------------------------------------
+# SPORT & Leisure
+# ------------------------------------------------
+# individual sports
+sport=skiing 										[0x2d06 resolution 23]
+sport=10pin | sport=9pin | sport=bowling			[0x2d07 resolution 23]
+sport=skating | leisure=ice_rink 					[0x2d08 resolution 23]
+sport=swimming & name=*								[0x2d09 resolution 24]
+sport=climbing & (type=indoor | indoor=yes) 		[0x2d13 resolution 23]
+sport=climbing 										[0x2d12 resolution 23]
+sport=diving 										[0x2d15 resolution 23]
+sport=soccer | sport=football						[0x2d16 resolution 23]
+sport=tennis 										[0x2d17 resolution 24]
+sport=rugby 										[0x2d0f resolution 23]
+
+# sports buildings
+leisure=sports_center | leisure=sports_centre {name '${name} (${sport})' | '${name}' } [0x2d0a resolution 22]
+leisure=stadium {name '${name} (${sport})' | '${name}' } 			[0x2c08 resolution 22]
+leisure=track {name '${name} (${sport})' | '${name}' } 				[0x2c08 resolution 22]
+leisure=pitch {name '${name} (${sport})' | '${name}' | '${sport}' } [0x2c08 resolution 23]
+
+leisure=marina & name=*								[0x4300 resolution 23]
+leisure=water_park & name=*							[0x5300 resolution 23]
+
+leisure=park & name=*								[0x2c06 resolution 23]
+leisure=playground & name=*							[0x2c06 resolution 23 default_name 'Playground']
+
+amenity=theatre 									[0x2d01 resolution 23]
+amenity=cinema 										[0x2d03 resolution 23]
+
+# ------------------------------------------------
+# TOURISM
+# ------------------------------------------------
+
+# accommodation
+tourism=hotel | tourism=motel { name '${name} (${operator}) (${stars}*)' | '${name} (${stars}*)' | '${operator} (${stars}*)' | '${name}' } 											  [0x2b01 resolution 23]
+tourism=guest_house | tourism=hostel | tourism=bed_and_breakfast [0x2b02 resolution 23]
+tourism=alpine_hut 									[0x2b02 resolution 23]
+
+# tourist attractions
+tourism=theme_park 									[0x2c01 resolution 23]
+tourism=attraction & historic=* 					[0x2c02 resolution 23]
+tourism=museum 										[0x2c02 resolution 23 default_name 'Museum']
+tourism=attraction {add addr:street='${note}'; add addr:city='${description}'; name '${name} (${operator})' | '${name}'} [0x2c04 resolution 23]
+tourism=zoo 										[0x2c07 resolution 23]
+tourism=viewpoint {name '${name} - ${description}' | '${name}'} [0x5200 resolution 23]
+tourism=wine_cellar | tourism=winery 				[0x2c0a resolution 23]
+
+# picnics
+tourism=picnic_site 								[0x4a00 resolution 23]
+amenity=bbq 										[0x4a01 resolution 23]
+
+geological=* 										[0x660e resolution 22]
+
+# ------------------------------------------------
+# TRAVEL
+# ------------------------------------------------
+railway=tram_stop 									[0x2f08 resolution 22]
+amenity=taxi 										[0x2f17 resolution 23]
+railway=halt 										[0x2f08 resolution 22]
+railway=station 									[0x2f08 resolution 20]
+amenity=ferry_terminal 								[0x2f19 resolution 22]
+railway=crossing | railway=level_crossing 			[0x6406 resolution 22]
+#amenity=bus_station [0x2f08 resolution 22]
+#highway=bus_stop [0x2f08 resolution 24]
