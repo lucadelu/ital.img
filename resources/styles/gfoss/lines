@@ -32,12 +32,13 @@ junction=roundabout & highway=unclassified [0x06 road_class=1 road_speed=2 resol
 junction=roundabout [0x06 road_class=0 road_speed=1 resolution 20]
 
 # PERCORSI
-highway=bridleway {add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
+highway=bridleway {add motorcar = no; add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
 highway=byway [0x16 road_class=0 road_speed=0 resolution 22]
-highway=cycleway {add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=1 resolution 22]
-highway=footway {add access = no; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
-highway=path {add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
-highway=footway & bicycle=yes {add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
+highway=cycleway {add motorcar = no; add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=1 resolution 22]
+highway=footway {add motorcar = no; add access = no; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
+highway=path {add motorcar = no; add access = no; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
+highway=footway & bicycle=yes {add motorcar = no; add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
+highway=path & bicycle=yes {add motorcar = no; add access = no; add bicycle = yes; add foot = yes} [0x16 road_class=0 road_speed=0 resolution 22]
 
 # STRADE
 highway=motorway {add oneway = yes; add bicycle = no; add foot = no } [0x01 road_class=4 road_speed=6 resolution 12]
