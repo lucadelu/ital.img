@@ -18,6 +18,8 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+#####VARIABILI DA NON TOCCARE##
+NO_ARG=0
 
 
 #####VARIABILI DA SETTARE#####
@@ -35,6 +37,18 @@ serie="Italia creata da ital.img"
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
 
+### HELP ##
+function usage {
+  echo "Utilizzo: `basename $0` opzioni 
+
+Opzioni:
+    -r		crea i file regionali
+    -i		crea il file dell'Italia
+    -e		crea il file dell'Italia con stile per escursionisti
+  "
+
+
+}
 
 ### CREA I FILE DELLE REGIONI ##
 function regioni {
@@ -104,6 +118,8 @@ function italia {
     #crea il file .img dei singoli pezzi dell'italia
     for NAME in $(find *.osm.gz -type f)
     do
+	if [[ $ITALY == true ]]
+	then  
 	    gzip -d $NAME
 	    nome=`echo "$NAME" | cut -d'.' -f1`
 	    filename=${nome}/${nome}.img" "
@@ -112,7 +128,9 @@ function italia {
 	    cd $nome
 	    java -Xmx1000M -jar ../mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ../$nome.osm  #--style-file=$style
 	    cd ..
-
+	fi
+	if [[ $HIKING == true ]]
+	then
 	    #CREA LO STILE ESCURSIONISTICO
 	    nome_escu=$nome"_escu"
 	    filename_escu=${nome_escu}/${nome}.img" "
@@ -121,6 +139,7 @@ function italia {
 	    cd $nome_escu
 	    java -Xmx1000M -jar ../mkgmap.jar  --style-file=$style_escu --check-roundabouts --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" --ignore-maxspeeds --ignore-turn-restrictions  ../$nome.osm #--style-file=$style
 	    cd ..
+	fi
     done
 
     echo $stringa
@@ -138,19 +157,40 @@ function italia {
 }
 
 ##### SCRIP #####
+if [ $# -eq "$NO_ARG" ] 
+then
+    usage
+    exit 
+fi
+
+while getopts ":rih" Opzione
+do
+  case $Opzione in
+	r ) REGION=true;;
+	i ) ITALY=true;;
+	h ) HIKING=true;;
+  esac
+done
 # scarica i dati dell'italia, per altri stati basta cambiare il path, ricordarsi di cambiare anche il bzip e il comando dopo per lo splitt
 wget -c http://download.geofabrik.de/osm/europe/italy.osm.bz2 
 # estrae i dati, se si cambia regione ricordarsi di cambiare il nome
 #bzip2 -f -d italy.osm.bz2 &> /dev/null 
 bzcat italy.osm.bz2 > italy.osm
 
-#crea i file per le regioni
-regioni
+if [[ $REGION == true ]]
+then
+  #crea i file per le regioni
+  regioni
+  #sposta i file da scaricare
+  mv -f output_img/*.osm.* output_osm_regioni/
+fi
+
+if [[ $ITALY == true || $HIKING == true ]]
+then
 #crea i file per l'italia
 italia
+fi
 
-#sposta i file da scaricare
-mv -f output_img/*.osm.* output_osm_regioni/
 #rimuove tutti i file non più utili
 rm -rf *.bz
 rm -rf 632400*
