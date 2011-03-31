@@ -182,7 +182,7 @@ italia()
 	#nome del file osm considerato
 	nome=`echo "$NAME" | cut -d'.' -f1`
 	#crea la mappa con lo stile gfoss
-	if [ $ITALY = true ]
+	if [ "$ITALY" = true ]
 	then  
 	    #nome della mappa
 	    serie="Mappa italiana creata da ital.img"
@@ -199,7 +199,7 @@ italia()
 	    cd ..
 	fi
 	#crea la mappa con lo stile escursionismo
-	if [ $HIKING == true ]
+	if [ "$HIKING" = true ]
 	then
 	    #nome della mappa
 	    serie="Mappa italiana per escursionisti creata da ital.img"
