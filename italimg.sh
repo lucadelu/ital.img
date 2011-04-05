@@ -21,6 +21,8 @@
 ### VARIABILI DA NON TOCCARE ##
 #per accedere all'help
 NO_ARG=0
+#per scaricare il file dell'italia
+DOWN=true 
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
 #nome della zona rappresentata default italy
 name="Italia"
@@ -40,6 +42,8 @@ usage()
   echo "Utilizzo: `basename $0` opzioni 
 
 Opzioni:
+    -d		non scarica il file italy.osm.bz2 ma lo prende dalla 
+		cartella in cui si trova `basename $0`
     -r		crea i file regionali
     -i		crea il file dell'Italia
     -e		crea il file dell'Italia con stile per escursionisti
@@ -52,6 +56,16 @@ Opzioni:
 # ls -1 poly/ | cut -d'.' -f'1' | tr '\n' ' '
 # echo "\n"
 #   "
+}
+
+download()
+{
+    if [ "$USE_WGET" ] ; then
+	wget --quiet -c http://download.geofabrik.de/osm/europe/italy.osm.bz2 
+    #usa curl
+    else 
+	curl -silent --location http://download.geofabrik.de/osm/europe/italy.osm.bz2
+    fi
 }
 
 ### FUNZIONE PER CREARE I FILE DI TUTTE REGIONI ##
@@ -181,13 +195,13 @@ italia()
     do
 	#nome del file osm considerato
 	nome=`echo "$NAME" | cut -d'.' -f1`
+	#decomprima il file
+	gzip -d $NAME
 	#crea la mappa con lo stile gfoss
 	if [ "$ITALY" = true ]
 	then  
 	    #nome della mappa
 	    serie="Mappa italiana creata da ital.img"
-	    #decomprima il file
-	    gzip -d $NAME
 	    #crea il nome del file
 	    filename=${nome}/${nome}.img" "
 	    stringa=${stringa}${filename} 
@@ -268,7 +282,7 @@ then
 fi
 
 #ciclo per vedere le opzioni scelte
-while getopts "R:rieh" Opzione
+while getopts "R:riehd" Opzione
 do
     case $Opzione in
 	#opzione per creare tutte le regioni
@@ -279,6 +293,8 @@ do
 	e ) HIKING=true;;
 	#opzione per stampare l'help
 	h ) usage; exit;;
+	#opzione per non scaricare il file
+	d ) DOWN=false;;
 	#opzione per creare una singola regione
 	R ) if [ -n $OPTARG ]; then 
 		#nome della regione
@@ -304,12 +320,9 @@ do
 done
 
 #scarica i dati dell'italia, per altri stati basta cambiare il path
-#usa wget
-if [ "$USE_WGET" ] ; then
-    wget --quiet -c http://download.geofabrik.de/osm/europe/italy.osm.bz2 
-#usa curl
-else 
-    curl -silent --location http://download.geofabrik.de/osm/europe/italy.osm.bz2
+if [ "$DOWN" = true ]
+then
+    download
 fi
 # estrae i dati, se si cambia regione ricordarsi di cambiare il nome
 bzcat italy.osm.bz2 > italy.osm
