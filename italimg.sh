@@ -137,7 +137,7 @@ regione()
 {
     #si sposta nella cartella di osmosis per divedere il file dell'italia in base alle regione
     cd osmosis/bin/
-    $NAMEREG_poly="../../poly/$NAMEREG.poly"
+    NAMEREG_poly="../../poly/$NAMEREG.poly"
     nome=$NAMEREG
     #divide il file dell'italia in quello delle regioni
     ./osmosis --read-xml file="../../italy.osm" --bounding-polygon file="$NAMEREG_poly" --write-xml file="../../regioni/$nome.osm"  
