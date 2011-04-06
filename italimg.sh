@@ -239,17 +239,20 @@ italia()
 	fi
     done
     #echo $stringa
-    #unisce tutti i file in un unico file dell'italia
-    java -Xmx1000M -jar mkgmap.jar --gmapsupp $stringa 
-    #comprime il file
-    tar -cf output_img/italia.tar gmapsupp.img README_data.txt 
-    gzip -9 -f output_img/italia.tar
-
+    if [ "$ITALY" = true ] ; then
+    	#unisce tutti i file in un unico file dell'italia
+    	java -Xmx1000M -jar mkgmap.jar --gmapsupp $stringa 
+    	#comprime il file
+    	tar -cf output_img/italia.tar gmapsupp.img README_data.txt 
+    	gzip -9 -f output_img/italia.tar
+    fi
     # echo $stringa_escu
-    java -Xmx1000M -jar mkgmap.jar --gmapsupp openmtbmap_it_srtm/GMAPSUPP_srtm.IMG $stringa_escu
-    #comprime il file
-    tar -cf output_img/italia_escursionismo.tar gmapsupp.img README_data.txt 
-    gzip -9 -f output_img/italia_escursionismo.tar
+    if [ "$HIKING" = true ] ; then
+    	java -Xmx1000M -jar mkgmap.jar --gmapsupp openmtbmap_it_srtm/GMAPSUPP_srtm.IMG $stringa_escu
+    	#comprime il file
+    	tar -cf output_img/italia_escursionismo.tar gmapsupp.img README_data.txt 
+    	gzip -9 -f output_img/italia_escursionismo.tar
+    fi
 }
 
 ##### SCRIP VERO E PROPRIO #####
