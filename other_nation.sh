@@ -17,7 +17,19 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+$NO_ARG=0
+###  FUNZIONE PER L'HELP ##
+usage()
+{
+  echo "Utilizzo: `basename $0` file.osm.bz2 "
 
+}
+#controlla se non ci sono parametri ed stampa l'help
+if [ $# -eq "$NO_ARG" ] 
+then
+    usage
+    exit 
+fi
 
 file_in=$1;
 name_nation=`echo $1 | cut -d'.' -f'1';`
