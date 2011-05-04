@@ -21,6 +21,8 @@
 ### VARIABILI DA NON TOCCARE ##
 #per accedere all'help
 NO_ARG=0
+#per scaricare il file dell'italia
+DOWN=true 
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
 #nome della zona rappresentata default italy
 name="Italia"
@@ -40,18 +42,29 @@ usage()
   echo "Utilizzo: `basename $0` opzioni 
 
 Opzioni:
+    -d		non scarica il file italy.osm.bz2 ma lo prende dalla 
+		cartella in cui si trova `basename $0`
     -r		crea i file regionali
     -i		crea il file dell'Italia
     -e		crea il file dell'Italia con stile per escursionisti
     -h		visualizza questa schermata
+    -R	nome	crea il file della regione scelta ATTENZIONE OPZIONE ANCORA DA TESTARE
+ 
+ Regioni accettate:
 "
-#     -R	nome	crea il file della regione scelta ATTENZIONE OPZIONE ANCORA DA TESTARE
-# 
-# Regioni accettate:
-#
-# ls -1 poly/ | cut -d'.' -f'1' | tr '\n' ' '
-# echo "\n"
-#   "
+ regions=`ls -1 poly/ | cut -d'.' -f'1' | tr '\n' ' '`
+ echo "    $regions \n"
+   
+}
+
+download()
+{
+    if [ "$USE_WGET" ] ; then
+	wget --quiet -c http://download.geofabrik.de/osm/europe/italy.osm.bz2 
+    #usa curl
+    else 
+	curl -silent --location http://download.geofabrik.de/osm/europe/italy.osm.bz2
+    fi
 }
 
 ### FUNZIONE PER CREARE I FILE DI TUTTE REGIONI ##
@@ -123,18 +136,24 @@ regione()
 {
     #si sposta nella cartella di osmosis per divedere il file dell'italia in base alle regione
     cd osmosis/bin/
-    $NAMEREG_poly="../../poly/$NAMEREG.poly"
-    nome=$NAMEREG
+    NAMEREG_poly="../../poly/$NAMEREG.poly"
+    nome_reg=$NAMEREG
     #divide il file dell'italia in quello delle regioni
-    ./osmosis --read-xml file="../../italy.osm" --bounding-polygon file="$NAMEREG_poly" --write-xml file="../../regioni/$nome.osm"  
+    	echo "INCOMINCIA OSMOSIS"
+    ./osmosis --read-xml file="../../italy.osm" --bounding-polygon file="$NAMEREG_poly" --write-xml file="../../regioni/$nome_reg.osm"  
     #si sposta nella cartella regioni
+	echo "FINISCE OSMOSIS"
     cd ../../
+	ls
     cd regioni/
     #crea e si sposta nella cartella della ragione
-    mkdir $nome
-    cd $nome
+    mkdir $nome_reg
+    cd $nome_reg
     #divide il file osm della regione se troppo grande
-    java -Xmx1000M -jar ../../splitter.jar --overlap=2500 ../${nome}.osm
+        echo "INCOMINCIA SPLITTER"
+    java -Xmx1000M -jar ../../splitter.jar --overlap=2500 ../${nome_reg}.osm
+        echo "FINISCE  SPLITTER"
+	ls
     #per tutti i file della regione che trova
     for NAME in $(find *.osm.gz -type f)
     do
@@ -148,16 +167,22 @@ regione()
 	#imposta il nome della mappa
 	serie_reg="Mappa della regione $nome_reg creata da ital.img"
 	#crea la directory e il file
+	echo "CONTROLLO I FILE PRESENTI"
+	ls
 	mkdir $nome
 	cd $nome
-	java -Xmx1000M -jar ../../../mkgmap.jar --style-file=$style --net --route --latin1 --country-name="$nome" --draw-priority=$priority --add-pois-to-areas --series-name="$serie_reg" ../$nome.osm 
+        echo "INCOMINCIA MKGMAP"
+	java -Xmx1000M -jar ../../../mkgmap.jar --style-file=$style --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie_reg" ../$nome.osm 
+        echo "FINISCE  MKGMAP"
 	cd ..
     done
     #torna alla directory di partenza
     cd ../../
     #unisce tutti i file
     #./sendmap20 -l $stringa
+        echo "INCOMINCIA MKGMAP UNIONE"	
     java -Xmx1000M -jar mkgmap.jar --gmapsupp $stringa
+        echo "FINISCE MKGMAP UNIONE"
     #crea il file tar.gz da scaricare
     tar -cf output_img/${nome_reg}.tar gmapsupp.img README_data.txt 
     gzip -9 -f output_img/${nome_reg}.tar
@@ -181,13 +206,12 @@ italia()
     do
 	#nome del file osm considerato
 	nome=`echo "$NAME" | cut -d'.' -f1`
+	#decomprima il file
+	gzip -d $NAME
 	#crea la mappa con lo stile gfoss
-	if [ "$ITALY" = true ]
-	then  
+	if [ "$ITALY" = true ] ; then  
 	    #nome della mappa
 	    serie="Mappa italiana creata da ital.img"
-	    #decomprima il file
-	    gzip -d $NAME
 	    #crea il nome del file
 	    filename=${nome}/${nome}.img" "
 	    stringa=${stringa}${filename} 
@@ -199,8 +223,7 @@ italia()
 	    cd ..
 	fi
 	#crea la mappa con lo stile escursionismo
-	if [ "$HIKING" = true ]
-	then
+	if [ "$HIKING" = true ] ; then
 	    #nome della mappa
 	    serie="Mappa italiana per escursionisti creata da ital.img"
 	    #crea il nome e la stringe per l'escursionismo
@@ -216,17 +239,20 @@ italia()
 	fi
     done
     #echo $stringa
-    #unisce tutti i file in un unico file dell'italia
-    java -Xmx1000M -jar mkgmap.jar --gmapsupp $stringa 
-    #comprime il file
-    tar -cf output_img/italia.tar gmapsupp.img README_data.txt 
-    gzip -9 -f output_img/italia.tar
-
+    if [ "$ITALY" = true ] ; then
+    	#unisce tutti i file in un unico file dell'italia
+    	java -Xmx1000M -jar mkgmap.jar --gmapsupp $stringa 
+    	#comprime il file
+    	tar -cf output_img/italia.tar gmapsupp.img README_data.txt 
+    	gzip -9 -f output_img/italia.tar
+    fi
     # echo $stringa_escu
-    java -Xmx1000M -jar mkgmap.jar --gmapsupp openmtbmap_it_srtm/GMAPSUPP_srtm.IMG $stringa_escu
-    #comprime il file
-    tar -cf output_img/italia_escursionismo.tar gmapsupp.img README_data.txt 
-    gzip -9 -f output_img/italia_escursionismo.tar
+    if [ "$HIKING" = true ] ; then
+    	java -Xmx1000M -jar mkgmap.jar --gmapsupp openmtbmap_it_srtm/GMAPSUPP_srtm.IMG $stringa_escu
+    	#comprime il file
+    	tar -cf output_img/italia_escursionismo.tar gmapsupp.img README_data.txt 
+    	gzip -9 -f output_img/italia_escursionismo.tar
+    fi
 }
 
 ##### SCRIP VERO E PROPRIO #####
@@ -261,14 +287,13 @@ fi
 ### FINE CODICE PRESO DA g.extension di GRASS GIS 6.4 copyrigth di Markus Neteler
 
 #controlla se non ci sono parametri ed stampa l'help
-if [ $# -eq "$NO_ARG" ] 
-then
+if [ $# -eq "$NO_ARG" ] ; then
     usage
     exit 
 fi
 
 #ciclo per vedere le opzioni scelte
-while getopts "R:rieh" Opzione
+while getopts "R:riehd" Opzione
 do
     case $Opzione in
 	#opzione per creare tutte le regioni
@@ -279,24 +304,24 @@ do
 	e ) HIKING=true;;
 	#opzione per stampare l'help
 	h ) usage; exit;;
+	#opzione per non scaricare il file
+	d ) DOWN=false;;
 	#opzione per creare una singola regione
-	R ) if [ -n $OPTARG ]; then 
+	R ) if [ -n $OPTARG ] ; then 
 		#nome della regione
-		NAMEREG=$OPTARG; 
+		NAMEREG=$OPTARG 
 		#variabile che serve per controllare se il nome della regione ha un file poly corrispondente, di defaul false
 		REGION=false
 		#per tutti i file poly trovati nella cartella poly
 		for i in `ls -1 poly/ | cut -d'.' -f'1' | tr '\n' ' '`; do 
 		    #se il nome della regione scelta combacia con il nome considerato nel ciclo setta REGION a true e ferma il ciclo
-		    if [ "$NAMEREG" = "$i" ]
-		    then 
+		    if [ "$NAMEREG" = "$i" ] ; then 
 			REGION=true; 
 			break
 		    fi 
 		done 
 		#se a fine ciclo REGION è ancora false restituisce un errore
-		if [ "$REGION" != true ]
-		then 
+		if [ "$REGION" != true ] ; then 
 		    echo "Regione non trovata, controllate le regioni accettate lanciando `basename $0` senza parametri"; 
 		fi
             fi;;
@@ -304,34 +329,27 @@ do
 done
 
 #scarica i dati dell'italia, per altri stati basta cambiare il path
-#usa wget
-if [ "$USE_WGET" ] ; then
-    wget --quiet -c http://download.geofabrik.de/osm/europe/italy.osm.bz2 
-#usa curl
-else 
-    curl -silent --location http://download.geofabrik.de/osm/europe/italy.osm.bz2
+if [ "$DOWN" = true ] ; then
+    download
 fi
 # estrae i dati, se si cambia regione ricordarsi di cambiare il nome
 bzcat italy.osm.bz2 > italy.osm
 #crea i file delle regioni
-if [ "$REGIONS" = true ]
-then
+if [ "$REGIONS" = true ] ; then
     #crea i file per le regioni
     regioni
     #sposta i file da scaricare
     mv -f output_img/*.osm.* output_osm_regioni/
 fi
 #crea il file della regione
-if [ "$REGION" = true ]
-then
+if [ "$REGION" = true ] ; then
     #crea i file per le regioni
     regione
     #sposta i file da scaricare
     mv -f output_img/*.osm.* output_osm_regioni/
 fi
 #crea il file dell'italia
-if [ "$ITALY" = true || "$HIKING" = true ]
-then
+if [ "$ITALY" = true ] || [ "$HIKING" = true ] ; then
     #crea i file per l'italia
     italia
 fi
