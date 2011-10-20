@@ -29,9 +29,9 @@ name="Italia"
 #abbreviazione della zona
 abbr="IT"
 #nome dello style
-style_it="../resources/styles/gfoss"
-style_escu="../resources/styles/hiking"
-style="../../../resources/styles/gfoss"
+style_it="../../styles/gfoss"
+style_escu="../../styles/hiking"
+style_reg="../../../styles/gfoss"
 
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
@@ -42,217 +42,165 @@ usage()
   echo "Utilizzo: `basename $0` opzioni 
 
 Opzioni:
-    -d		non scarica il file italy.osm.bz2 ma lo prende dalla 
-		cartella in cui si trova `basename $0`
+    -d          elimina file originali
+    -f		non scarica il file italy.osm.bz2/pbf ma lo prende  
+		dalla cartella in cui si trova `basename $0`
+    -p          scarica/usa file pbf
     -r		crea i file regionali
     -i		crea il file dell'Italia
     -e		crea il file dell'Italia con stile per escursionisti
     -h		visualizza questa schermata
-    -R	nome	crea il file della regione scelta ATTENZIONE OPZIONE ANCORA DA TESTARE
+    -R	nome	crea il file della regione scelta
  
  Regioni accettate:
 "
- regions=`ls -1 poly/ | cut -d'.' -f'1' | tr '\n' ' '`
+ regions=`find poly/*.poly -type f | cut -d'.' -f'1' | cut -d'/' -f'2' | tr '\n' ' '`
  echo "    $regions \n"
+
+#per supportare in furuto un file degli stili esterno
+#  echo " Stili accettati:"
+#   styles=""
+#   for i in `find styles/* -type d `;do 
+#       style=`pwd`/$i
+#       styles="${styles}${style} "; 
+#       echo "  -  ${style}"
+#   done
+ 
    
 }
 
 download()
 {
+
+    echo "Downloading italy.osm.$EXT file..."
+
     if [ "$USE_WGET" ] ; then
-	wget --quiet -c http://download.geofabrik.de/osm/europe/italy.osm.bz2 
+	wget --quiet -c http://download.geofabrik.de/osm/europe/italy.osm.$EXT 
     #usa curl
     else 
-	curl -silent --location http://download.geofabrik.de/osm/europe/italy.osm.bz2
+	curl -silent --location http://download.geofabrik.de/osm/europe/italy.osm.$EXT
+    fi
+
+    if [ ! "$PBF" ] ; then
+        bzcat italy.osm.$EXT > italy.osm
     fi
 }
 
 ### FUNZIONE PER CREARE I FILE DI TUTTE REGIONI ##
 regioni()
 {
-    #si sposta nella cartella di osmosis per divedere il file dell'italia in base alle regioni
-    cd osmosis/bin/
-    #per ogni file poly della regione crea un file osm dell regione
-    for NAME in $(find ../../poly/*.poly -type f)
+    for NAME in $(find poly/*.poly -type f)
     do
 	#estrapola il nome del file poly
-	#nomepoly=`echo "$NAME" | cut -d'/' -f4` SE FUNGE QUESTA RIGA È DA RIMUOVERE
-	nome=`basename $nomepoly .poly`
-	#divide il file dell'italia in quello delle regioni
-	./osmosis --read-xml file="../../italy.osm" --bounding-polygon file="$NAME" --write-xml file="../../regioni/$nome.osm"
-    done
-    #si sposta nella cartella regioni dove sono stati creati i file osm
-    cd ../../
-    cd regioni/
-    #crea il file .img per ogni regione
-    for NAME_REG in $(find *.osm -type f)
-    do
-	#assegna il nome e crea la directory per il file diviso
-	nome_reg=`echo "$NAME_REG" | cut -d'.' -f1`
+	nome_reg=`basename $NAME .poly`
+
+        if [ "$PBF" ] ; then
+            ./osmconvert  italy.osm.$EXT -B=$NAME > tmp/regioni/$nome_reg.osm
+        else
+            ./osmconvert  italy.osm -B=$NAME > tmp/regioni/$nome_reg.osm
+        fi
+
+        cd tmp/regioni
+
+	e crea la directory per il file diviso
 	#crea ed entra dentro la cartella
 	mkdir $nome_reg
 	cd $nome_reg
+        
 	#divide il file osm della regione se troppo grande
-	java -Xmx1000M -jar ../../splitter.jar --overlap=2500 ../$NAME_REG 
-	#per tutti i file della regione che trova
-	for NAME in $(find *.osm.gz -type f)
-	do
-	    #decomprime il file
-	    gzip -d $NAME
-	    nome=`echo "$NAME" | cut -d'.' -f1`
-	    #crea la stringa del nome
-	    filename=regioni/${nome_reg}/${nome}/${nome}.img" "
-	    #crea la stringa per poi unire i singoli file della regione
-	    stringa=${stringa}${filename}
-	    #imposta il nome della mappa
-	    serie_reg="Mappa della regione $nome_reg creata da ital.img"
-	    #crea ed entra nella directory
-	    mkdir $nome
-	    cd $nome
-	    #crea il file img
-	    java -Xmx1000M -jar ../../../mkgmap.jar --style-file=$style --net --route --latin1 --country-name="$nome" --draw-priority=$priority --add-pois-to-areas --series-name="$serie_reg" ../$nome.osm 
-	    cd ..
-	done
-	#torna alla directory di partenza
-	cd ../../
+        serie="Mappa della regione $nome_reg creata da ital.img"        
+        java -Xmx2500M -jar ../../../splitter-r180/splitter.jar --overlap=2000 ../$nome_reg.osm
+        java -Xmx2000M -jar ../../../mkgmap-r1995/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
 	#unisce tutti i file
-	java -Xmx1000M -jar mkgmap.jar --gmapsupp $stringa
+	java -Xmx2000M -jar ../../../mkgmap.jar --gmapsupp *.img
 	#crea il file tar.gz da scaricare e lo comprime
-	tar -cf output_img/${nome_reg}.tar gmapsupp.img README_data.txt 
-	gzip -9 -f output_img/${nome_reg}.tar
-	#rimuove i singoli file
-	rm gmapsupp.img
-	unset stringa
+	tar -cf ../../../output_img/${nome_reg}.tar gmapsupp.img ../../../README_data.txt 
+	gzip -9 -f ../../../output_img/${nome_reg}.tar
+	unset serie
 	#comprime il file osm e lo mette nella cartella download
-	cd regioni/
+        cd ..
+        rm $nome_reg.osm.bz2
 	bzip2 $nome_reg.osm
-	mv $nome_reg.osm.bz2 ../output_img/
+	mv $nome_reg.osm.bz2 ../../output_osm_regioni/
+        cd ../..
     done
-    cd ..
+
+    rm -rf tmp/regioni/*
 }
 
 ### FUNZIONE PER CREARE IL FILE DI UNA REGIONE ##
 regione()
 {
-    #si sposta nella cartella di osmosis per divedere il file dell'italia in base alle regione
-    cd osmosis/bin/
-    NAMEREG_poly="../../poly/$NAMEREG.poly"
+    NAMEREG_poly="poly/$NAMEREG.poly"
     nome_reg=$NAMEREG
     #divide il file dell'italia in quello delle regioni
-    	echo "INCOMINCIA OSMOSIS"
-    ./osmosis --read-xml file="../../italy.osm" --bounding-polygon file="$NAMEREG_poly" --write-xml file="../../regioni/$nome_reg.osm"  
-    #si sposta nella cartella regioni
-	echo "FINISCE OSMOSIS"
-    cd ../../
-	ls
-    cd regioni/
+    if [ "$PBF" ] ; then
+        ./osmconvert  italy.osm.$EXT -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
+    else
+        ./osmconvert  italy.osm -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
+    fi
+    cd tmp/regioni
     #crea e si sposta nella cartella della ragione
     mkdir $nome_reg
     cd $nome_reg
-    #divide il file osm della regione se troppo grande
-        echo "INCOMINCIA SPLITTER"
-    java -Xmx1000M -jar ../../splitter.jar --overlap=2500 ../${nome_reg}.osm
-        echo "FINISCE  SPLITTER"
-	ls
-    #per tutti i file della regione che trova
-    for NAME in $(find *.osm.gz -type f)
-    do
-	#decomprime i file
-	gzip -d $NAME
-	nome=`echo "$NAME" | cut -d'.' -f1`
-	#crea la stringa del nome
-	filename=regioni/${nome_reg}/${nome}/${nome}.img" "
-	#crea la stringa per poi unire i singoli file della regione
-	stringa=${stringa}${filename}
-	#imposta il nome della mappa
-	serie_reg="Mappa della regione $nome_reg creata da ital.img"
-	#crea la directory e il file
-	echo "CONTROLLO I FILE PRESENTI"
-	ls
-	mkdir $nome
-	cd $nome
-        echo "INCOMINCIA MKGMAP"
-	java -Xmx1000M -jar ../../../mkgmap.jar --style-file=$style --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie_reg" ../$nome.osm 
-        echo "FINISCE  MKGMAP"
-	cd ..
-    done
-    #torna alla directory di partenza
-    cd ../../
+
+    java -Xmx2500M -jar ../../../splitter-r180/splitter.jar --overlap=2000 ../${nome_reg}.osm 
+    java -Xmx2000M -jar ../../../mkgmap-r1995/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
     #unisce tutti i file
-    #./sendmap20 -l $stringa
-        echo "INCOMINCIA MKGMAP UNIONE"	
-    java -Xmx1000M -jar mkgmap.jar --gmapsupp $stringa
-        echo "FINISCE MKGMAP UNIONE"
-    #crea il file tar.gz da scaricare
-    tar -cf output_img/${nome_reg}.tar gmapsupp.img README_data.txt 
-    gzip -9 -f output_img/${nome_reg}.tar
+    java -Xmx2000M -jar ../../../mkgmap.jar --gmapsupp *.img
+    #crea il file tar.gz da scaricare e lo comprime
+    tar -cf ../../../output_img/${nome_reg}.tar gmapsupp.img ../../../README_data.txt 
+    gzip -9 -f ../../../output_img/${nome_reg}.tar
     #rimuove i singoli file
     rm gmapsupp.img
     unset stringa
     #comprime il file osm e lo mette nella cartella download
-    cd regioni/
-    bzip2 $nome_reg.osm
-    mv $nome_reg.osm.bz2 ../output_img/
     cd ..
+    rm $nome_reg.osm.bz2
+    bzip2 $nome_reg.osm
+    mv $nome_reg.osm.bz2 ../../output_osm_regioni/
+    cd ../..
+    rm -rf tmp/regioni/*
 }
 
 ### FUNZIONE PER CREARE IL FILE DELL'ITALIA ##
 italia()
 {
-    #divide il file osm, se si cambia regione ricordarsi di cambiare il nome
-    java -Xmx1000M -jar splitter.jar --overlap=2000 italy.osm
-    #crea il file .img dei singoli pezzi dell'italia
-    for NAME in $(find *.osm.gz -type f)
-    do
-	#nome del file osm considerato
-	nome=`echo "$NAME" | cut -d'.' -f1`
-	#decomprima il file
-	gzip -d $NAME
-	#crea la mappa con lo stile gfoss
-	if [ "$ITALY" = true ] ; then  
-	    #nome della mappa
-	    serie="Mappa italiana creata da ital.img"
-	    #crea il nome del file
-	    filename=${nome}/${nome}.img" "
-	    stringa=${stringa}${filename} 
-	    #crea la directory e ci entra
-	    mkdir $nome
-	    cd $nome
-	    #crea il file img
-	    java -Xmx1000M -jar ../mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ../$nome.osm  #--style-file=$style
-	    cd ..
-	fi
-	#crea la mappa con lo stile escursionismo
-	if [ "$HIKING" = true ] ; then
-	    #nome della mappa
-	    serie="Mappa italiana per escursionisti creata da ital.img"
-	    #crea il nome e la stringe per l'escursionismo
-	    nome_escu=$nome"_escu"
-	    filename_escu=${nome_escu}/${nome}.img" "
-	    stringa_escu=${stringa_escu}${filename_escu} 
-	    #crea la directory ed entra
-	    mkdir $nome_escu
-	    cd $nome_escu
-	    #crea il file img con lo stile escursionismo
-	    java -Xmx1000M -jar ../mkgmap.jar  --style-file=$style_escu --check-roundabouts --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" --ignore-maxspeeds --ignore-turn-restrictions  ../$nome.osm #--style-file=$style
-	    cd ..
-	fi
-    done
-    #echo $stringa
-    if [ "$ITALY" = true ] ; then
-    	#unisce tutti i file in un unico file dell'italia
-    	java -Xmx1000M -jar mkgmap.jar --gmapsupp $stringa 
-    	#comprime il file
-    	tar -cf output_img/italia.tar gmapsupp.img README_data.txt 
-    	gzip -9 -f output_img/italia.tar
+    if [ "$PBF" ] ; then
+        java -Xmx2500M -jar splitter-r180/splitter.jar --overlap=2000 italy.osm.$EXT
+    else
+        java -Xmx2500M -jar splitter-r180/splitter.jar --overlap=2000 italy.osm
     fi
-    # echo $stringa_escu
-    if [ "$HIKING" = true ] ; then
-    	java -Xmx1000M -jar mkgmap.jar --gmapsupp openmtbmap_it_srtm/GMAPSUPP_srtm.IMG $stringa_escu
-    	#comprime il file
-    	tar -cf output_img/italia_escursionismo.tar gmapsupp.img README_data.txt 
-    	gzip -9 -f output_img/italia_escursionismo.tar
+
+    #crea la mappa con lo stile gfoss
+    if [ "$ITALY" ] ; then  
+        #nome della mappa
+        serie="Mappa italiana creata da ital.img"
+        cd tmp/italia
+        #crea il file img
+        java -Xmx2000M -jar ../../mkgmap-r1995/mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ../../6*.osm.pbf  #--style-file=$style
+        java -Xmx1000M -jar ../../mkgmap-r1995/mkgmap.jar --gmapsupp *.img
+        tar -cf ../../output_img/italia.tar gmapsupp.img ../../README_data.txt 
+        gzip -9 -f ../../output_img/italia.tar
+        cd ../../
+        rm -rf tmp/italia/*
     fi
+    #crea la mappa con lo stile escursionismo
+    if [ "$HIKING" ] ; then
+        #nome della mappa
+        serie="Mappa italiana per escursionisti creata da ital.img"
+        #crea il nome e la stringe per l'escursionismo
+        cd tmp/italia_escu
+        #crea il file img con lo stile escursionismo
+        java -Xmx1000M -jar ../../mkgmap-r1995/mkgmap.jar  --style-file=$style_escu --check-roundabouts --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" --ignore-maxspeeds --ignore-turn-restrictions  ../../6*.osm.pbf #--style-file=$style
+        java -Xmx1000M -jar ../../mkgmap-r1995/mkgmap.jar --gmapsupp ../../openmtbmap_it_srtm/*.img *img
+        #comprime il file
+        tar -cf ../../output_img/italia_escursionismo.tar gmapsupp.img ../../README_data.txt 
+        gzip -9 -f ../../output_img/italia_escursionismo.tar
+        cd ../../
+        rm -rf tmp/italia_escu/*
+    fi
+    rm -f 6*.pbf
 }
 
 ##### SCRIP VERO E PROPRIO #####
@@ -292,20 +240,25 @@ if [ $# -eq "$NO_ARG" ] ; then
     exit 
 fi
 
+DOWN=true
 #ciclo per vedere le opzioni scelte
-while getopts "R:riehd" Opzione
+while getopts "R:riehdpf" Opzione
 do
     case $Opzione in
 	#opzione per creare tutte le regioni
-	r ) REGIONS=true;;
+	r ) REGIONS=1;;
 	#opzione per creare l'italia stile gfoss
-	i ) ITALY=true;;
+	i ) ITALY=1;;
 	#opzione per creare l'italia stile escursionismo
-	e ) HIKING=true;;
+	e ) HIKING=1;;
 	#opzione per stampare l'help
 	h ) usage; exit;;
-	#opzione per non scaricare il file
-	d ) DOWN=false;;
+	#opzione per eliminare il file originale
+	d ) REMOVE=1;;
+        #opzione per non scaricare il file
+        f ) DOWN=false;;
+        #scarica file pbf invece che bz2
+        p ) PBF=1;;
 	#opzione per creare una singola regione
 	R ) if [ -n $OPTARG ] ; then 
 		#nome della regione
@@ -328,18 +281,29 @@ do
     esac
 done
 
+#controlla se scaricare bz2 o pbf
+if [ "$PBF" ] ; then
+    EXT=pbf
+else
+    EXT=bz2
+fi
+
 #scarica i dati dell'italia, per altri stati basta cambiare il path
 if [ "$DOWN" = true ] ; then
     download
+else
+    if [ ! "$PBF" ] ; then
+        bzcat italy.osm.bz2 > italy.osm
+    fi
 fi
-# estrae i dati, se si cambia regione ricordarsi di cambiare il nome
-bzcat italy.osm.bz2 > italy.osm
+
 #crea i file delle regioni
-if [ "$REGIONS" = true ] ; then
+if [ "$REGIONS" ] ; then
     #crea i file per le regioni
     regioni
     #sposta i file da scaricare
     mv -f output_img/*.osm.* output_osm_regioni/
+
 fi
 #crea il file della regione
 if [ "$REGION" = true ] ; then
@@ -349,14 +313,17 @@ if [ "$REGION" = true ] ; then
     mv -f output_img/*.osm.* output_osm_regioni/
 fi
 #crea il file dell'italia
-if [ "$ITALY" = true ] || [ "$HIKING" = true ] ; then
+if [ "$ITALY" ] || [ "$HIKING" ] ; then
     #crea i file per l'italia
     italia
 fi
-#rimuove tutti i file non più utili
-rm -rf *.bz
-rm -rf 632400*
-rm -rf *.img 
-rm -rf *.IMG 
-rm -rf *.osm
-rm -rf regioni/*
+
+#rimuove file originale
+if [ "$REMOVE" = true ] ; then
+    #controlla se il file è pbf o bz2
+    if [ ! "$PBF" ] ; then
+        rm -f italy.osm.bz2 italy.osm
+    else
+        rm -f italy.osm.pbf
+    fi
+fi
