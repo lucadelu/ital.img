@@ -112,7 +112,7 @@ regioni()
         java -Xmx2500M -jar ../../../splitter-r180/splitter.jar --overlap=2000 ../$nome_reg.osm
         java -Xmx2000M -jar ../../../mkgmap-r1995/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
 	#unisce tutti i file
-	java -Xmx2000M -jar ../../../mkgmap.jar --gmapsupp *.img
+	java -Xmx2000M -jar ../../../mkgmap-r1995/mkgmap.jar --gmapsupp *.img
 	#crea il file tar.gz da scaricare e lo comprime
 	tar -cf ../../../output_img/${nome_reg}.tar gmapsupp.img ../../../README_data.txt 
 	gzip -9 -f ../../../output_img/${nome_reg}.tar
@@ -147,7 +147,7 @@ regione()
     java -Xmx2500M -jar ../../../splitter-r180/splitter.jar --overlap=2000 ../${nome_reg}.osm 
     java -Xmx2000M -jar ../../../mkgmap-r1995/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
     #unisce tutti i file
-    java -Xmx2000M -jar ../../../mkgmap.jar --gmapsupp *.img
+    java -Xmx2000M -jar ../../../mkgmap-r1995/mkgmap.jar --gmapsupp *.img
     #crea il file tar.gz da scaricare e lo comprime
     tar -cf ../../../output_img/${nome_reg}.tar gmapsupp.img ../../../README_data.txt 
     gzip -9 -f ../../../output_img/${nome_reg}.tar
