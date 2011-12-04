@@ -36,18 +36,18 @@ junction=roundabout & highway=unclassified [0x06 road_class=1 road_speed=2 resol
 junction=roundabout [0x06 road_class=0 road_speed=1 resolution 22]
 
 # PERCORSI
-highway=bridleway {add access = no; add bicycle = yes; add foot = yes} [0x04 road_class=3 road_speed=2 resolution 16 default_name 'Percorso per cavalli']
+highway=bridleway {add bicycle = yes; add foot = yes} [0x04 road_class=3 road_speed=2 resolution 16 default_name 'Percorso per cavalli']
 highway=byway [0x04 road_class=3 road_speed=2 resolution 16 default_name 'Percorso']
-highway=cycleway {add access = no; add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=5 resolution 16 default_name 'Percorso ciclabile']
-highway=footway {add access = no; add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
-highway=path {add access = no; add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
-highway=footway & bicycle=yes {add access = no; add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
+highway=cycleway {add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=5 resolution 16 default_name 'Percorso ciclabile']
+highway=footway {add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
+highway=path {add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
+highway=footway & bicycle=yes {add bicycle = yes; add foot = yes} [0x04 road_class=4 road_speed=4 resolution 16 default_name 'Percorso']
 
 # STRADE
-highway=motorway {add oneway = yes; add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Autostrada']
-highway=motorway_link {add oneway = yes; add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Autostrada']
-highway=trunk  {add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Superstrada']
-highway=trunk_link {add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Superstrada']
+highway=motorway {add access = no; add oneway = yes; add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Autostrada']
+highway=motorway_link {add access = no; add oneway = yes; add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Autostrada']
+highway=trunk  {add access = no; add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Superstrada']
+highway=trunk_link {add access = no; add bicycle = no; add foot = no } [0x06 road_class=0 road_speed=0 resolution 20 default_name 'Superstrada']
 highway=primary [0x06 road_class=0 road_speed=0 resolution 22 default_name 'Strada']
 highway=primary_link [0x06 road_class=0 road_speed=0 resolution 22 default_name 'Strada']
 highway=secondary [0x06 road_class=0 road_speed=0 resolution 22 default_name 'Strada']
