@@ -24,20 +24,39 @@ First download the map of contour lines for Garmin from
 
 and put it inside "openmtbmap_it_srtm" folder.
 
+Polygon files
+=============
+
+The polygon files are under Creative Commons Attribution Share-Alike 2.0 License [0] ("CloudMade Materials")
+
+[0] http://creativecommons.org/licenses/by-sa/2.0/
+
+
 How to use
 ==========
 
-To create the map of Italy you can run only 
+Options:
+    -d          non scarica il file italy.osm.bz2/pbf ma lo prende  
+                dalla cartella in cui si trova `italimg.sh`
+    -p          scarica file pbf
+    -r          crea i file regionali
+    -i          crea il file dell'Italia
+    -e          crea il file dell'Italia con stile per escursionisti
+    -h          visualizza questa schermata
+    -R  nome    crea il file della regione scelta
 
-      sh italimg.sh 
+To create the map for garmin of Italy you can run only 
+
+      sh italimg.sh -p -i
 
 and it download italian OSM data from geofabrick repository and create the map for 
 Garmin of the whole Italy and one for each region. The output files are inside 
 output_img folder.
 
-In addition it split the whole Italian osm file into osm regional files, 
-they are saved into output_osm_regioni folder
+It is also possible to split the whole Italian osm file into osm regional files, 
+they are saved into output_osm_regioni folder and output_img
 
+      sh italimg.sh -r
 
 To create other region you download the osm file from internet (geofabrick o something else)
 and after you can run

@@ -26,5 +26,14 @@ Thanks to
 - Openmtbmap (http://openmtbmap.org/)
 - OpenStreetMap (www.openstreetmap.org)
 
+Polygon files
+=============
+
+The polygon files are under Creative Commons Attribution Share-Alike 2.0 License [0] ("CloudMade Materials")
+
+[0] http://creativecommons.org/licenses/by-sa/2.0/
+
+License
+=======
 
 Map data (c) OpenStreetMap contributors, CC-BY-SA
