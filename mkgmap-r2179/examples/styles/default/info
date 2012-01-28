@@ -6,13 +6,19 @@
 
 # A short one line description of the style
 #
-summary: Charlie's amended style 
+summary: The default style
 
 # Version of the style itself
 #
 version=1.0
 
+base-style=contours_ft
+#base-style=location
+base-style=waters
+
 # A longer description of the style.
 description {
-Charlie's style.  This shows most things I would want to be able to see when geocaching.
+The default style.  This is a heavyweight style that is
+designed for use when mapping and especially in lightly covered
+areas.
 }
