@@ -76,7 +76,7 @@ java -Xmx1000M -jar ../../$mkgmap/mkgmap.jar --gmapsupp *.img
 tar -cf ../../output_img/${name_nation}.tar gmapsupp.img ../../README_data.txt 
 gzip -9 -f ../../output_img/${name_nation}.tar
 cd ../../
-rm -rf tmp/nations*
+rm -rf tmp/nations/*
 }
 #ciclo per vedere le opzioni scelte
 while getopts ":po" Opzione
