@@ -62,3 +62,4 @@ To create other region you download the osm file from internet (geofabrick o som
 and after you can run
 
       sh other_nation.sh "name_of_file_without_.osm"
+
