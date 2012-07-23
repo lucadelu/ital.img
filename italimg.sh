@@ -36,7 +36,7 @@ mkgmap="mkgmap-r2179"
 splitter="splitter-r180"
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
-
+XMX=2000M
 ###  FUNZIONE PER L'HELP ##
 usage()
 {
@@ -111,10 +111,10 @@ regioni()
         
 	#divide il file osm della regione se troppo grande
         serie="Mappa della regione $nome_reg creata da ital.img"        
-        java -Xmx2500M -jar ../../../$splitter/splitter.jar --overlap=2000 ../$nome_reg.osm
-        java -Xmx2000M -jar ../../../$mkgmap/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
+        java -Xmx${XMX} -jar ../../../$splitter/splitter.jar --overlap=2000 ../$nome_reg.osm
+        java -Xmx${XMX} -jar ../../../$mkgmap/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
 	#unisce tutti i file
-	java -Xmx2000M -jar ../../../$mkgmap/mkgmap.jar --gmapsupp *.img
+	java -Xmx${XMX} -jar ../../../$mkgmap/mkgmap.jar --gmapsupp *.img
 	#crea il file tar.gz da scaricare e lo comprime
 	tar -cf ../../../output_img/${nome_reg}.tar gmapsupp.img ../../../README_data.txt 
 	gzip -9 -f ../../../output_img/${nome_reg}.tar
@@ -151,10 +151,10 @@ regione()
     mkdir $nome_reg
     cd $nome_reg
 
-    java -Xmx2500M -jar ../../../$splitter/splitter.jar --overlap=2000 ../${nome_reg}.osm 
-    java -Xmx2000M -jar ../../../$mkgmap/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
+    java -Xmx${XMX} -jar ../../../$splitter/splitter.jar --overlap=2000 ../${nome_reg}.osm 
+    java -Xmx${XMX} -jar ../../../$mkgmap/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
     #unisce tutti i file
-    java -Xmx2000M -jar ../../../$mkgmap/mkgmap.jar --gmapsupp *.img
+    java -Xmx${XMX} -jar ../../../$mkgmap/mkgmap.jar --gmapsupp *.img
     #crea il file tar.gz da scaricare e lo comprime
     tar -cf ../../../output_img/${nome_reg}.tar gmapsupp.img ../../../README_data.txt 
     gzip -9 -f ../../../output_img/${nome_reg}.tar
@@ -179,9 +179,9 @@ regione()
 italia()
 {
     if [ "$PBF" ] ; then
-        java -Xmx2500M -jar $splitter/splitter.jar --overlap=2000 italy.osm.$EXT
+        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 italy.osm.$EXT
     else
-        java -Xmx2500M -jar $splitter/splitter.jar --overlap=2000 italy.osm
+        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 italy.osm
     fi
 
     #crea la mappa con lo stile gfoss
@@ -190,8 +190,8 @@ italia()
         serie="Mappa italiana creata da ital.img"
         cd tmp/italia
         #crea il file img
-        java -Xmx2000M -jar ../../$mkgmap/mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ../../6*.osm.pbf  #--style-file=$style
-        java -Xmx1000M -jar ../../$mkgmap/mkgmap.jar --gmapsupp *.img
+        java -Xmx${XMX} -jar ../../$mkgmap/mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ../../6*.osm.pbf  #--style-file=$style
+        java -Xmx${XMX} -jar ../../$mkgmap/mkgmap.jar --gmapsupp *.img
         tar -cf ../../output_img/italia.tar gmapsupp.img ../../README_data.txt 
         gzip -9 -f ../../output_img/italia.tar
         cd ../../
@@ -204,8 +204,8 @@ italia()
         #crea il nome e la stringe per l'escursionismo
         cd tmp/italia_escu
         #crea il file img con lo stile escursionismo
-        java -Xmx1000M -jar ../../$mkgmap/mkgmap.jar  --style-file=$style_escu --check-roundabouts --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" --ignore-maxspeeds --ignore-turn-restrictions  ../../6*.osm.pbf #--style-file=$style
-        java -Xmx1000M -jar ../../$mkgmap/mkgmap.jar --gmapsupp *img ../../openmtbmap_it_srtm/*.img
+        java -Xmx${XMX} -jar ../../$mkgmap/mkgmap.jar  --style-file=$style_escu --check-roundabouts --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" --ignore-maxspeeds --ignore-turn-restrictions  ../../6*.osm.pbf #--style-file=$style
+        java -Xmx${XMX} -jar ../../$mkgmap/mkgmap.jar --gmapsupp *img ../../openmtbmap_it_srtm/*.img
         #comprime il file
         tar -cf ../../output_img/italia_escursionismo.tar gmapsupp.img ../../README_data.txt 
         gzip -9 -f ../../output_img/italia_escursionismo.tar
