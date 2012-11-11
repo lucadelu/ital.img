@@ -77,10 +77,10 @@ download()
     echo "Downloading italy.osm.$EXT file..."
 
     if [ "$USE_WGET" ] ; then
-	wget --quiet -c http://download.geofabrik.de/osm/europe/italy.osm.$EXT 
+	wget --quiet -c http://download.geofabrik.de/openstreetmap/europe/italy.osm.$EXT 
     #usa curl
     else 
-	curl -silent --location http://download.geofabrik.de/osm/europe/italy.osm.$EXT
+	curl -silent --location http://download.geofabrik.de/openstreetmap/europe/italy.osm.$EXT
     fi
 
     if [ ! "$PBF" ] ; then
