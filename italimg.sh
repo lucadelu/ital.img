@@ -27,7 +27,8 @@ DOWN=true
 #nome della zona rappresentata default italy
 name="Italia"
 #percorso al file da scaricare deve esserci poi le estensioni pbf e/o bz2
-url="http://download.geofabrik.de/openstreetmap/europe/italy-latest.osm"
+url="http://download.geofabrik.de/openstreetmap/europe/"
+file_name="italy-latest.osm"
 #abbreviazione della zona
 abbr="IT"
 #nome dello style
@@ -46,7 +47,7 @@ usage()
 
 Opzioni:
     -d          elimina file originali
-    -f		non scarica il file italy.osm.bz2/pbf ma lo prende  
+    -f		non scarica il file ${file_name}.bz2/pbf ma lo prende
 		dalla cartella in cui si trova `basename $0`
     -p          scarica/usa file pbf
     -r		crea i file regionali bz2
@@ -76,17 +77,17 @@ Opzioni:
 download()
 {
 
-    echo "Downloading italy.osm.$EXT file..."
+    echo "Downloading ${file_name}.$EXT file..."
 
     if [ "$USE_WGET" ] ; then
 	wget --quiet -c ${url}.${EXT}
     #usa curl
     else 
-	curl -silent --location ${url}.${EXT}
+	curl -silent --location ${url}${file_name}.${EXT}
     fi
 
     if [ ! "$PBF" ] ; then
-        bzcat italy.osm.$EXT > italy.osm
+        bzcat ${file_name}.$EXT > ${file_name}
     fi
 }
 
@@ -99,9 +100,9 @@ regioni()
 	nome_reg=`basename $NAME .poly`
 
         if [ "$PBF" ] ; then
-            ./osmconvert  italy.osm.$EXT -B=$NAME > tmp/regioni/$nome_reg.osm
+            ./osmconvert  ${file_name}.$EXT -B=$NAME > tmp/regioni/$nome_reg.osm
         else
-            ./osmconvert  italy.osm -B=$NAME > tmp/regioni/$nome_reg.osm
+            ./osmconvert  ${file_name} -B=$NAME > tmp/regioni/$nome_reg.osm
         fi
 
         cd tmp/regioni
@@ -144,9 +145,9 @@ regione()
     nome_reg=$NAMEREG
     #divide il file dell'italia in quello delle regioni
     if [ "$PBF" ] ; then
-        ./osmconvert  italy.osm.$EXT -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
+        ./osmconvert  ${file_name}.$EXT -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
     else
-        ./osmconvert  italy.osm -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
+        ./osmconvert  ${file_name} -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
     fi
     cd tmp/regioni
     #crea e si sposta nella cartella della ragione
@@ -181,9 +182,9 @@ regione()
 italia()
 {
     if [ "$PBF" ] ; then
-        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 italy.osm.$EXT
+        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 ${file_name}.$EXT
     else
-        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 italy.osm
+        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 ${file_name}
     fi
 
     #crea la mappa con lo stile gfoss
@@ -310,7 +311,7 @@ if [ "$DOWN" = true ] ; then
     download
 else
     if [ ! "$PBF" ] ; then
-        bzcat italy.osm.bz2 > italy.osm
+        bzcat ${file_name}.bz2 > ${file_name}
     fi
 fi
 
@@ -336,8 +337,8 @@ fi
 if [ "$REMOVE" = true ] ; then
     #controlla se il file è pbf o bz2
     if [ ! "$PBF" ] ; then
-        rm -f italy.osm.bz2 italy.osm
+        rm -f ${file_name}.bz2 ${file_name}
     else
-        rm -f italy.osm.pbf
+        rm -f ${file_name}.pbf
     fi
 fi
