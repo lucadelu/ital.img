@@ -26,6 +26,8 @@ DOWN=true
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
 #nome della zona rappresentata default italy
 name="Italia"
+#percorso al file da scaricare deve esserci poi le estensioni pbf e/o bz2
+url="http://download.geofabrik.de/openstreetmap/europe/italy-latest.osm"
 #abbreviazione della zona
 abbr="IT"
 #nome dello style
@@ -77,10 +79,10 @@ download()
     echo "Downloading italy.osm.$EXT file..."
 
     if [ "$USE_WGET" ] ; then
-	wget --quiet -c http://download.geofabrik.de/openstreetmap/europe/italy.osm.$EXT 
+	wget --quiet -c ${url}.${EXT}
     #usa curl
     else 
-	curl -silent --location http://download.geofabrik.de/openstreetmap/europe/italy.osm.$EXT
+	curl -silent --location ${url}.${EXT}
     fi
 
     if [ ! "$PBF" ] ; then
