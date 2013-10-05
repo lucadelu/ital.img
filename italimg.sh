@@ -22,7 +22,9 @@
 #per accedere all'help
 NO_ARG=0
 #per scaricare il file dell'italia
-DOWN=true 
+DOWN=true
+#percorso al directory di lavoro
+MYPATH=`pwd`
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
 #nome della zona rappresentata default italy
 name="Italia"
@@ -35,8 +37,8 @@ abbr="IT"
 style_it="../../styles/gfoss"
 style_escu="../../styles/hiking"
 style_reg="../../../styles/gfoss"
-mkgmap="mkgmap-r2179"
-splitter="splitter-r202"
+mkgmap="mkgmap-r2734"
+splitter="splitter-r311"
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
 XMX=2000M
@@ -80,7 +82,7 @@ download()
     echo "Downloading ${file_name}.$EXT file..."
 
     if [ "$USE_WGET" ] ; then
-	wget --quiet -c ${url}.${EXT}
+	wget --quiet -c ${url}${file_name}.${EXT}
     #usa curl
     else 
 	curl -silent --location ${url}${file_name}.${EXT}
@@ -100,9 +102,9 @@ regioni()
 	nome_reg=`basename $NAME .poly`
 
         if [ "$PBF" ] ; then
-            ./osmconvert  ${file_name}.$EXT -B=$NAME > tmp/regioni/$nome_reg.osm
+            osmconvert  ${file_name}.$EXT -B=$NAME > tmp/regioni/$nome_reg.osm
         else
-            ./osmconvert  ${file_name} -B=$NAME > tmp/regioni/$nome_reg.osm
+            osmconvert  ${file_name} -B=$NAME > tmp/regioni/$nome_reg.osm
         fi
 
         cd tmp/regioni
@@ -111,26 +113,26 @@ regioni()
 	#crea ed entra dentro la cartella
 	mkdir $nome_reg
 	cd $nome_reg
-        
+
 	#divide il file osm della regione se troppo grande
-        serie="Mappa della regione $nome_reg creata da ital.img"        
-        java -Xmx${XMX} -jar ../../../$splitter/splitter.jar --overlap=2000 ../$nome_reg.osm
-        java -Xmx${XMX} -jar ../../../$mkgmap/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
+        serie="Mappa della regione $nome_reg creata da ital.img"
+        java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --overlap=2000 ../$nome_reg.osm
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
 	#unisce tutti i file
-	java -Xmx${XMX} -jar ../../../$mkgmap/mkgmap.jar --gmapsupp *.img
+	java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
 	#crea il file tar.gz da scaricare e lo comprime
-	tar -cf ../../../output_img/${nome_reg}.tar gmapsupp.img ../../../README_data.txt 
-	gzip -9 -f ../../../output_img/${nome_reg}.tar
+	tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
+	gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
 	unset serie
 	#comprime il file osm e lo mette nella cartella download
         cd ..
 	if [ "$WPBF" ] ; then
-	    ../../osmconvert $nome_reg.osm -o=$nome_reg.pbf
-	    mv $nome_reg.pbf ../../output_osm_regioni/
+	    osmconvert $nome_reg.osm -o=$nome_reg.pbf
+	    mv $nome_reg.pbf ${MYPATH}/output_osm_regioni/
 	fi
 	if [ "$WBZ2" ] ; then
 	    bzip2 $nome_reg.osm
-	    mv $nome_reg.osm.bz2 ../../output_osm_regioni/
+	    mv $nome_reg.osm.bz2 ${MYPATH}/output_osm_regioni/
 	fi
         cd ../..
     done
@@ -145,34 +147,34 @@ regione()
     nome_reg=$NAMEREG
     #divide il file dell'italia in quello delle regioni
     if [ "$PBF" ] ; then
-        ./osmconvert  ${file_name}.$EXT -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
+        osmconvert  ${file_name}.$EXT -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
     else
-        ./osmconvert  ${file_name} -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
+        osmconvert  ${file_name} -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
     fi
     cd tmp/regioni
     #crea e si sposta nella cartella della ragione
     mkdir $nome_reg
     cd $nome_reg
 
-    java -Xmx${XMX} -jar ../../../$splitter/splitter.jar --overlap=2000 ../${nome_reg}.osm 
-    java -Xmx${XMX} -jar ../../../$mkgmap/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
+    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --overlap=2000 ../${nome_reg}.osm
+    java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
     #unisce tutti i file
-    java -Xmx${XMX} -jar ../../../$mkgmap/mkgmap.jar --gmapsupp *.img
+    java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
     #crea il file tar.gz da scaricare e lo comprime
-    tar -cf ../../../output_img/${nome_reg}.tar gmapsupp.img ../../../README_data.txt 
-    gzip -9 -f ../../../output_img/${nome_reg}.tar
+    tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
+    gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
     #rimuove i singoli file
     rm gmapsupp.img
     unset stringa
     #comprime il file osm e lo mette nella cartella download
     cd ..
 #     if [ "$REGION_PBF" ] ; then
-	../../osmconvert $nome_reg.osm -o=$nome_reg.pbf
-	mv $nome_reg.pbf ../../output_osm_regioni/
+	osmconvert $nome_reg.osm -o=$nome_reg.pbf
+	mv $nome_reg.pbf ${MYPATH}/output_osm_regioni/
 #     fi
 #     if [ "$REGION_BZ2" ] ; then
 	bzip2 $nome_reg.osm
-	mv $nome_reg.osm.bz2 ../../output_osm_regioni/
+	mv $nome_reg.osm.bz2 ${MYPATH}/output_osm_regioni/
 #     fi
     cd ../..
     rm -rf tmp/regioni/*
@@ -188,15 +190,15 @@ italia()
     fi
 
     #crea la mappa con lo stile gfoss
-    if [ "$ITALY" ] ; then  
+    if [ "$ITALY" ] ; then
         #nome della mappa
         serie="Mappa italiana creata da ital.img"
         cd tmp/italia
         #crea il file img
-        java -Xmx${XMX} -jar ../../$mkgmap/mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ../../6*.osm.pbf  #--style-file=$style
-        java -Xmx${XMX} -jar ../../$mkgmap/mkgmap.jar --gmapsupp *.img
-        tar -cf ../../output_img/italia.tar gmapsupp.img ../../README_data.txt 
-        gzip -9 -f ../../output_img/italia.tar
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ../../6*.osm.pbf  #--style-file=$style
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
+        tar -cf ${MYPATH}/output_img/italia.tar gmapsupp.img ${MYPATH}/README_data.txt
+        gzip -9 -f ${MYPATH}/output_img/italia.tar
         cd ../../
         rm -rf tmp/italia/*
     fi
@@ -207,11 +209,11 @@ italia()
         #crea il nome e la stringe per l'escursionismo
         cd tmp/italia_escu
         #crea il file img con lo stile escursionismo
-        java -Xmx${XMX} -jar ../../$mkgmap/mkgmap.jar  --style-file=$style_escu --check-roundabouts --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" --ignore-maxspeeds --ignore-turn-restrictions  ../../6*.osm.pbf #--style-file=$style
-        java -Xmx${XMX} -jar ../../$mkgmap/mkgmap.jar --gmapsupp *img ../../openmtbmap_it_srtm/*.img
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar  --style-file=$style_escu --check-roundabouts --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" --ignore-maxspeeds --ignore-turn-restrictions  ../../6*.osm.pbf #--style-file=$style
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
         #comprime il file
-        tar -cf ../../output_img/italia_escursionismo.tar gmapsupp.img ../../README_data.txt 
-        gzip -9 -f ../../output_img/italia_escursionismo.tar
+        tar -cf ${MYPATH}/output_img/italia_escursionismo.tar gmapsupp.img ${MYPATH}/README_data.txt
+        gzip -9 -f ${MYPATH}/output_img/italia_escursionismo.tar
         cd ../../
         rm -rf tmp/italia_escu/*
     fi
@@ -292,7 +294,7 @@ do
 		done 
 		#se a fine ciclo REGION è ancora false restituisce un errore
 		if [ ! "$REGION" ] ; then 
-		    echo "Regione non trovata, controllate le regioni accettate lanciando `basename $0` senza parametri"; 
+		    echo "Regione non trovata, controllate le regioni accettate lanciando `basename $0` senza parametri";
 		    exit 0;
 		fi
             fi;;
