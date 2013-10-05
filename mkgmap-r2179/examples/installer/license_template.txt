@@ -1,6 +1,0 @@
-Map data (c) OpenStreetMap and contributors
-http://www.openstreetmap.org/
-
-Map data licenced under Creative Commons Attribution ShareAlike 2.0
-See http://creativecommons.org/licenses/by-sa/2.0/
-
