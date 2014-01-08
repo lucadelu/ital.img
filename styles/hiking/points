@@ -85,6 +85,7 @@ natural=stream [0x6512 resolution 21]
 natural=volcano [0x2c0c resolution 21]
 natural=wetland [0x6513 resolution 21]
 
+natural=saddle { name '${name} ${ele}' | '${name}' | '${ele}' } [0x6616 resolution 21 default_name 'Sella']
 mountain_pass=yes { name '${name} ${ele}' | '${name}' | '${ele}' } [0x6616 resolution 21 default_name 'Passo']
 
 
