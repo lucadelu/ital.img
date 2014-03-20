@@ -24,6 +24,7 @@ NO_ARG=0
 #per scaricare il file dell'italia
 DOWN=true
 #percorso al directory di lavoro
+#bisogna lanciare il comando dalla directory di italimg.sh
 MYPATH=`pwd`
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
 #nome della zona rappresentata default italy

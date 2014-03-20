@@ -38,3 +38,5 @@ fi
 
 sed -i "/mkgmap=/c\mkgmap=\"${mkgmap}\"" italimg.sh
 sed -i "/splitter=/c\splitter=\"${splitter}\"" italimg.sh
+sed -i "/mkgmap=/c\mkgmap=\"${mkgmap}\"" other_nation.sh
+sed -i "/splitter=/c\splitter=\"${splitter}\"" other_nation.sh

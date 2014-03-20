@@ -18,14 +18,17 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 NO_ARG=0
+#percorso al directory di lavoro
+#bisogna lanciare il comando dalla directory di italimg.sh
+MYPATH=`pwd`
 ###  FUNZIONE PER L'HELP ##
 usage()
 {
-  echo "Utilizzo: `basename $0` opzioni file.osm.bz2/pbf
+  echo "Utilizzo: `basename $0` file.osm.bz2/pbf opzioni
 
-Opzioni: 
+Opzioni:
     -o          osm file not compressed
-    -p          scarica/usa file pbf
+    -p          usa file pbf
 "
 
 }
@@ -33,7 +36,7 @@ Opzioni:
 if [ $# -eq "$NO_ARG" ] 
 then
     usage
-    exit 
+    exit
 fi
 
 file_in=$1;
@@ -41,15 +44,15 @@ name_nation=`echo $1 | cut -d'.' -f'1';`
 prefix=`echo ${1##*.}`
 
 #####VARIABILI DA SETTARE#####
-#nome della zona rappresentata 
+#nome della zona rappresentata
 name=$name_nation
 #abbreviazione della zona
 #abbr="IT"
 #nome dello style
 style_it="../../styles/gfoss"
 style_escu="../../styles/hiking"
-mkgmap="mkgmap-r2179"
-splitter="splitter-r180"
+mkgmap="mkgmap-r2734"
+splitter="splitter-r311"
 #nome della mappa
 serie=${name_nation}" creata da ital.img"
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
@@ -64,18 +67,18 @@ fi
 
 ### CREA IL FILE DELLA NAZIONE ###
 #divide il file osm, se si cambia regione ricordarsi di cambiare il nome
-if [ "$EXT" = bz -o "$EXT" = osm ] ; then
-  java -Xmx2500M -jar $splitter/splitter.jar --overlap=2000 ${name_nation}.osm
+if [ "$EXT" = bz2 -o "$EXT" = osm ] ; then
+  java -Xmx2500M -jar $splitter/splitter.jar ${name_nation}.osm
 else
-  java -Xmx2500M -jar $splitter/splitter.jar --overlap=2000 $file_in
+  java -Xmx2500M -jar $splitter/splitter.jar $file_in
 fi
 cd tmp/nations
 #crea il file img
-java -Xmx2000M -jar ../../$mkgmap/mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ../../6*.osm.pbf  #--style-file=$style
-java -Xmx1000M -jar ../../$mkgmap/mkgmap.jar --gmapsupp *.img
-tar -cf ../../output_img/${name_nation}.tar gmapsupp.img ../../README_data.txt 
-gzip -9 -f ../../output_img/${name_nation}.tar
-cd ../../
+java -Xmx2000M -jar ${MYPATH}/$mkgmap/mkgmap.jar --style-file=$style_it --net --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" ${MYPATH}/6*.osm.pbf  #--style-file=$style
+java -Xmx1000M -jar ${MYPATH}/$mkgmap/mkgmap.jar --gmapsupp *.img
+tar -cf ${MYPATH}/output_img/${name_nation}.tar gmapsupp.img ${MYPATH}/README_data.txt
+gzip -9 -f ${MYPATH}/output_img/${name_nation}.tar
+cd ${MYPATH}
 rm -rf tmp/nations/*
 }
 #ciclo per vedere le opzioni scelte
@@ -97,6 +100,8 @@ elif [ "$OSM" ]; then
 else
     EXT=bz2
 fi
+
+echo $EXT
 
 create
 
