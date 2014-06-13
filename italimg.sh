@@ -37,6 +37,7 @@ abbr="IT"
 #nome dello style
 style_it="../../styles/gfoss"
 style_escu="../../styles/hiking"
+$style_cycli="../../styles/cycling"
 style_reg="../../../styles/gfoss"
 mkgmap="mkgmap-r2734"
 splitter="splitter-r311"
@@ -57,6 +58,7 @@ Opzioni:
     -w		scrive file regionali pbf
     -i		crea il file dell'Italia
     -e		crea il file dell'Italia con stile per escursionisti
+    -c          crea il file dell'Italia con stile per ciclisti
     -h		visualizza questa schermata
     -R	nome	crea il file della regione scelta in formato bz2 e pbf
  
@@ -218,6 +220,21 @@ italia()
         cd ../../
         rm -rf tmp/italia_escu/*
     fi
+    #crea la mappa con lo stile ciclismo
+    if [ "$CYCLING" ] ; then
+        #nome della mappa
+        serie="Mappa italiana per ciclisti creata da ital.img"
+        #crea il nome e la stringe per l'escursionismo
+        cd tmp/italia_bici
+        #crea il file img con lo stile escursionismo
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar  --style-file=$style_cycli --check-roundabouts --route --latin1 --country-name="$name" --country-abbr="$abbr" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" --ignore-maxspeeds --ignore-turn-restrictions  ../../6*.osm.pbf #--style-file=$style
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
+        #comprime il file
+        tar -cf ${MYPATH}/output_img/italia_ciclismo.tar gmapsupp.img ${MYPATH}/README_data.txt
+        gzip -9 -f ${MYPATH}/output_img/italia_ciclismo.tar
+        cd ../../
+        rm -rf tmp/italia_escu/*
+    fi
     rm -f 6*.pbf
 }
 
@@ -269,6 +286,8 @@ do
 	i ) ITALY=1;;
 	#opzione per creare l'italia stile escursionismo
 	e ) HIKING=1;;
+	#opzione per creare l'italia stile escursionismo
+	c ) CYCLING=1;;
 	#opzione per stampare l'help
 	h ) usage; exit;;
 	#opzione per eliminare il file originale
@@ -331,7 +350,7 @@ if [ "$REGION" ] ; then
     regione
 fi
 #crea il file dell'italia
-if [ "$ITALY" ] || [ "$HIKING" ] ; then
+if [ "$ITALY" ] || [ "$HIKING" ]  || [ "$CYCLING" ]; then
     #crea i file per l'italia
     italia
 fi
