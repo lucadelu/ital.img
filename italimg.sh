@@ -37,7 +37,7 @@ abbr="IT"
 #nome dello style
 style_it="../../styles/gfoss"
 style_escu="../../styles/hiking"
-$style_cycli="../../styles/cycling"
+style_cycli="../../styles/cycling"
 style_reg="../../../styles/gfoss"
 mkgmap="mkgmap-r2734"
 splitter="splitter-r311"
