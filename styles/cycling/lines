@@ -62,7 +62,7 @@ highway=unsurfaced [0x0a road_class=1 road_speed=1 resolution 22 default_name 'S
 
 highway=pedestrian & area!=yes {add access = no; add foot = yes} [0x04 road_class=5 road_speed=5 resolution 20]
 # Mop up any unrecognised highway types
-highway=* & area!=yes [0x07 ]
+highway=* & area!=yes {add access = no; add oneway = yes; add bicycle = no; add foot = no } [0x07 road_class=0 road_speed=0]
 
 highway=track & tracktype=grade1 [0x1d road_class=4 road_speed=4 resolution 16  default_name 'Strada sterrata']
 highway=track & tracktype=grade2 [0x1d road_class=3 road_speed=3 resolution 16  default_name 'Strada sterrata']
@@ -80,9 +80,9 @@ railway=subway [0x14 resolution 17]
 railway=tram [0x14 resolution 18]
 
 #Imianti risalita
-aerialway=chair_lift[0x1a resolution 20]
-aerialway=drag_lift[0x1a resolution 20]
-aerialway=cable_car[0x1a resolution 20]
+aerialway=chair_lift[0x1a resolution 20 road_class=0 road_speed=0]
+aerialway=drag_lift[0x1a resolution 20 road_class=0 road_speed=0]
+aerialway=cable_car[0x1a resolution 20 road_class=0 road_speed=0]
 
 #route=ferry [0x1a road_class=0 road_speed=0 resolution 18]
 
