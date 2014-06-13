@@ -277,7 +277,7 @@ fi
 
 DOWN=true
 #ciclo per vedere le opzioni scelte
-while getopts "R:riehdpfwx" Opzione
+while getopts "R:riechdpfwx" Opzione
 do
     case $Opzione in
 	#opzione per creare tutte le regioni
