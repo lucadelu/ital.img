@@ -24,7 +24,7 @@ MYPATH=`pwd`
 ###  FUNZIONE PER L'HELP ##
 usage()
 {
-  echo "Utilizzo: `basename $0` file.osm.bz2/pbf opzioni
+  echo "Utilizzo: `basename $0` opzioni file.osm.bz2/pbf
 
 Opzioni:
     -o          osm file not compressed
@@ -39,9 +39,17 @@ then
     exit
 fi
 
-file_in=$1;
-name_nation=`echo $1 | cut -d'.' -f'1';`
-prefix=`echo ${1##*.}`
+if [ $# -eq "1" ]
+then
+  file_in=$1;
+  name_nation=`echo $1 | cut -d'.' -f'1';`
+  prefix=`echo ${1##*.}`;
+elif [ $# -eq "2" ]
+then
+  file_in=$2;
+  name_nation=`echo $2 | cut -d'.' -f'1';`
+  prefix=`echo ${2##*.}`;
+fi
 
 #####VARIABILI DA SETTARE#####
 #nome della zona rappresentata
@@ -51,8 +59,8 @@ name=$name_nation
 #nome dello style
 style_it="../../styles/gfoss"
 style_escu="../../styles/hiking"
-mkgmap="mkgmap-r2734"
-splitter="splitter-r311"
+mkgmap="mkgmap-r3333"
+splitter="splitter-r412"
 #nome della mappa
 serie=${name_nation}" creata da ital.img"
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
@@ -88,7 +96,7 @@ do
         #scarica file pbf invece che bz2
         p ) PBF=1;;
         #scarica file pbf invece che bz2
-        o ) OSM=1;;        
+        o ) OSM=1;;
     esac
 done
 
