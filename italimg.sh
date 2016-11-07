@@ -39,8 +39,8 @@ style_it="../../styles/gfoss"
 style_escu="../../styles/hiking"
 style_cycli="../../styles/cycling"
 style_reg="../../../styles/gfoss"
-mkgmap="mkgmap-r3694"
-splitter="splitter-r439"
+mkgmap="mkgmap-r3701"
+splitter="splitter-r437"
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
 XMX=2000M
@@ -119,7 +119,7 @@ regioni()
 
 	#divide il file osm della regione se troppo grande
         serie="Mappa della regione $nome_reg creata da ital.img"
-        java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --overlap=2000 ../$nome_reg.osm
+        java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../$nome_reg.osm
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
 	#unisce tutti i file
 	java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
@@ -159,7 +159,7 @@ regione()
     mkdir $nome_reg
     cd $nome_reg
 
-    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --overlap=2000 ../${nome_reg}.osm
+    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../${nome_reg}.osm
     java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --style-file=$style_reg --net --route --latin1 --country-name="$nome_reg" --draw-priority=$priority --add-pois-to-areas --series-name="$serie" 6*.osm.pbf  #--style-file=$style
     #unisce tutti i file
     java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
@@ -187,9 +187,9 @@ regione()
 italia()
 {
     if [ "$PBF" ] ; then
-        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 ${file_name}.$EXT
+        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}.$EXT
     else
-        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 ${file_name}
+        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}
     fi
 
     #crea la mappa con lo stile gfoss
@@ -243,7 +243,7 @@ italia()
 ### INIZIO CODICE PRESO DA g.extension di GRASS GIS 6.4 copyrigth di Markus Neteler
 #controlla la presenza di bzcat
 if [ ! -x "`which bzcat`" ] ; then
-    echo "Il programma 'wget' è richiesto. Installatelo per far funzionare ital.img"
+    echo "Il programma 'bzcat' è richiesto. Installatelo per far funzionare ital.img"
     exit 1
 fi
 #controlla la presenza di tar
@@ -253,7 +253,7 @@ if [ ! -x "`which tar`" ] ; then
 fi
 #controlla la presenza di bzip
 if [ ! -x "`which gzip`" ] ; then
-    echo "Il programma 'tar' è richiesto. Installatelo per far funzionare ital.img."
+    echo "Il programma 'gzip' è richiesto. Installatelo per far funzionare ital.img."
     exit 1
 fi
 #controlla la presenza di wget o curl
