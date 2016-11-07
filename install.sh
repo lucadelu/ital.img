@@ -44,11 +44,13 @@ fi
 if [ ! -d $mkgmap ]; then
     $DOWN http://www.mkgmap.org.uk/download/${mkgmap}.tar.gz
     tar xzf ${mkgmap}.tar.gz
+    rm -f ${mkgmap}.tar.gz
 fi
 
 if [ ! -d $splitter ]; then
     $DOWN http://www.mkgmap.org.uk/download/${splitter}.tar.gz
     tar xzf ${splitter}.tar.gz
+    rm -f ${splitter}.tar.gz
 fi
 
 sed -i "/mkgmap=/c\mkgmap=\"${mkgmap}\"" italimg.sh
@@ -59,31 +61,37 @@ sed -i "/splitter=/c\splitter=\"${splitter}\"" other_nation.sh
 if [ ! -d sea ]; then
     $DOWN http://osm2.pleiades.uni-wuppertal.de/sea/latest/sea.zip
     unzip sea.zip -d sea
+    rm -f sea.zip
 else
     if [ "$FORCE" ]; then
         rm -rf sea
         $DOWN http://osm2.pleiades.uni-wuppertal.de/sea/latest/sea.zip
         unzip sea.zip -d sea
+        rm -f sea.zip
     fi
 fi
 
 if [ ! -d bounds ]; then
     $DOWN http://osm2.pleiades.uni-wuppertal.de/bounds/latest/bounds.zip
     unzip bounds.zip -d bounds
+    rm -f bounds.zip
 else
     if [ "$FORCE" ]; then
         rm -rf bounds
         $DOWN http://osm2.pleiades.uni-wuppertal.de/bounds/latest/bounds.zip
         unzip bounds.zip -d bounds
+        rm -f bounds.zip
     fi
 fi
 if [ ! -f cities15000.txt ]; then
     $DOWN -c http://download.geonames.org/export/dump/cities15000.zip
     unzip cities15000.zip
+    rm -f cities15000.zip
 else
     if [ "$FORCE" ]; then
         rm -rf cities15000.txt
         $DOWN http://download.geonames.org/export/dump/cities15000.zip
         unzip cities15000.zip
+        rm -f cities15000.zip
     fi
 fi
