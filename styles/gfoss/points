@@ -1,3 +1,5 @@
+addr:housenumber=* {set mkgmap:execute_finalize_rules=true}
+
 # aeroway=airport [0x5900 resolution 20]
 aeroway=airport [0x2f04 resolution 20]
 aeroway=aerodrome [0x2f04 resolution 20]
