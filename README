@@ -20,7 +20,7 @@ This program requires Java 1.6 or above to run.
 
 First download the map of contour lines for Garmin from 
 
-      ftp://ftp5.gwdg.de/pub/misc/openstreetmap/openmtbmap/contourlines/openmtbmap_it_srtm.zip
+	http://geodati.fmach.it/gfoss_geodata/osm/output_osm_srtm/openmtbmap_it_srtm.zip
 
 and put it inside "openmtbmap_it_srtm" folder.
 
