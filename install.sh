@@ -2,8 +2,8 @@
 
 # This file is useful to install ital.img dependencies
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
-mkgmap="mkgmap-r3701"
-splitter="splitter-r437"
+mkgmap="mkgmap-r4140"
+splitter="splitter-r591"
 
 #ciclo per vedere le opzioni scelte
 while getopts "f" Opzione
