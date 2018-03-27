@@ -39,8 +39,8 @@ style_it="../../styles/gfoss"
 style_escu="../../styles/hiking"
 style_cycli="../../styles/cycling"
 style_reg="../../../styles/gfoss"
-mkgmap="mkgmap-r3701"
-splitter="splitter-r437"
+mkgmap="mkgmap-r4140"
+splitter="splitter-r591"
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
 XMX=2000M

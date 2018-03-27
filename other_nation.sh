@@ -59,8 +59,8 @@ name=$name_nation
 #nome dello style
 style_it="../../styles/gfoss"
 style_escu="../../styles/hiking"
-mkgmap="mkgmap-r3694"
-splitter="splitter-r439"
+mkgmap="mkgmap-r4140"
+splitter="splitter-r591"
 #nome della mappa
 serie=${name_nation}" creata da ital.img"
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
