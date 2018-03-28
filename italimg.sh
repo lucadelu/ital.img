@@ -54,18 +54,18 @@ Opzioni:
     -f		non scarica il file ${file_name}.bz2/pbf ma lo prende
 		dalla cartella in cui si trova `basename $0`
     -p          scarica/usa file pbf
-    -r		crea i file regionali bz2
-    -w		scrive file regionali pbf
+    -r		crea i file regionali garmin e bz2
+    -w		crea i file regionali garmin e pbf
     -i		crea il file dell'Italia
     -e		crea il file dell'Italia con stile per escursionisti
     -c          crea il file dell'Italia con stile per ciclisti
     -h		visualizza questa schermata
-    -R	nome	crea il file della regione scelta in formato bz2 e pbf
+    -R	nome	crea i file della regione scelta in formato garmin, bz2 e pbf
 
- Regioni accettate:
+Regioni accettate:
 "
  regions=`find poly/*.poly -type f | cut -d'.' -f'1' | cut -d'/' -f'2' | tr '\n' ' '`
- echo "    $regions \n"
+ echo -e "    $regions \n"
 
 #per supportare in futuro un file degli stili esterno
 #  echo " Stili accettati:"
@@ -107,101 +107,32 @@ download()
 ### FUNZIONE PER CREARE I FILE DI TUTTE REGIONI ##
 regioni()
 {
-    for NAME in $(find poly/*.poly -type f)
-    do
-	#estrapola il nome del file poly
-	nome_reg=`basename $NAME .poly`
-
-        if [ "$PBF" ] ; then
-            osmconvert  ${file_name}.$EXT -B=$NAME > tmp/regioni/$nome_reg.osm
-        else
-            osmconvert  ${file_name} -B=$NAME > tmp/regioni/$nome_reg.osm
-        fi
-
-        cd tmp/regioni
-
-	#e crea la directory per il file diviso
-	#crea ed entra dentro la cartella
-	mkdir $nome_reg
-	cd $nome_reg
-
-	#divide il file osm della regione se troppo grande
-    serie="Mappa della regione $nome_reg creata da ital.img"
-    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../$nome_reg.osm
-    java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
-        --style-file=$style_reg \
-        --latin1 \
-        --country-name="$name_reg" \
-        --area-name="$name_reg" \
-        --family-name="OpenStreetMap: $name_reg" \
-        --description="$name_reg" \
-        --draw-priority=$priority \
-        --series-name="$serie" \
-        --precomp-sea=${MYPATH}/sea/ \
-        --generate-sea \
-        --bounds=${MYPATH}/bounds \
-        --max-jobs \
-        --remove-short-arcs \
-        --route \
-        --drive-on=detect,right \
-        --process-destination \
-        --process-exits \
-        --location-autofill=is_in,nearest \
-        --index \
-        --x-split-name-index \
-        --housenumbers \
-        --road-name-pois \
-        --add-pois-to-areas \
-        --no-poi-address \
-        --link-pois-to-ways \
-        --preserve-element-order \
-        --verbose \
-        --name-tag-list=int_name,name,name:it \
-        --draw-priority=$priority \
-        --merge-lines \
-        --reduce-point-density=3.2 \
-        --gmapsupp \
-        6*.osm.pbf
-	# l'unione dei file è già avvenuta con opzione --gmapsupp
-	#java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
-	#crea il file tar.gz da scaricare e lo comprime
-	tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
-	gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
-	unset serie
-	#comprime il file osm e lo mette nella cartella download
-        cd ..
-	if [ "$WPBF" ] ; then
-	    osmconvert $nome_reg.osm -o=$nome_reg.pbf
-	    mv $nome_reg.pbf ${MYPATH}/output_osm_regioni/
-	fi
-	if [ "$WBZ2" ] ; then
-	    bzip2 $nome_reg.osm
-	    mv $nome_reg.osm.bz2 ${MYPATH}/output_osm_regioni/
-	fi
-        cd ../..
+    for NAMEREG_poly in $(find poly/*.poly -type f) ; do
+	NAMEREG=`basename $NAMEREG_poly .poly`
+	regione
     done
-
-    rm -rf tmp/regioni/*
 }
 
 ### FUNZIONE PER CREARE IL FILE DI UNA REGIONE ##
 regione()
 {
-    NAMEREG_poly="poly/$NAMEREG.poly"
     nome_reg=$NAMEREG
-    serie="Mappa di $nome_reg creata da ital.img"
+    serie="Mappa regione $nome_reg creata da ital.img"
     #divide il file dell'italia in quello delle regioni
     if [ "$PBF" ] ; then
         osmconvert  ${file_name}.$EXT -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
     else
         osmconvert  ${file_name} -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
     fi
-    cd tmp/regioni
+
     #crea e si sposta nella cartella della ragione
+    cd tmp/regioni
     mkdir $nome_reg
     cd $nome_reg
 
+    #divide il file osm della regione se troppo grande
     java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../${nome_reg}.osm
+
     java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
         --style-file=$style_reg \
         --latin1 \
@@ -236,27 +167,31 @@ regione()
         --reduce-point-density=3.2 \
         --gmapsupp \
         6*.osm.pbf
-    #unisce tutti i file
+
     #l'unione dei file è già avvenuta con opzione --gmapsupp
     #java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
+
     #crea il file tar.gz da scaricare e lo comprime
     tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
     gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
-    #rimuove i singoli file
-    rm gmapsupp.img
+
     unset serie
-    #comprime il file osm e lo mette nella cartella download
+
+    #comprime il file e li mette nella cartella download
     cd ..
-#     if [ "$REGION_PBF" ] ; then
+
+    #crea pbf se usato -w oppure -R
+    if [ "$WPBF" ] || [ "$REGION" ]; then
 	osmconvert $nome_reg.osm -o=$nome_reg.pbf
 	mv $nome_reg.pbf ${MYPATH}/output_osm_regioni/
-#     fi
-#     if [ "$REGION_BZ2" ] ; then
+    fi
+    #crea bz2 se usato -r oppure -R
+    if [ "$WBZ2" ] || [ "$REGION" ]; then
 	bzip2 $nome_reg.osm
 	mv $nome_reg.osm.bz2 ${MYPATH}/output_osm_regioni/
-#     fi
+    fi
     cd ../..
-    rm -rf tmp/regioni/*
+    rm -rf tmp/regioni/$nome_reg
 }
 
 ### FUNZIONE PER CREARE IL FILE DELL'ITALIA ##
@@ -496,7 +431,8 @@ do
 		for i in `ls -1 poly/ | cut -d'.' -f'1' | tr '\n' ' '`; do
 		    #se il nome della regione scelta combacia con il nome considerato nel ciclo setta REGION a true e ferma il ciclo
 		    if [ "$NAMEREG" = "$i" ] ; then
-			REGION=1;
+			NAMEREG_poly="poly/$NAMEREG.poly"
+			REGION=1
 			break
 		    fi
 		done
@@ -528,19 +464,16 @@ fi
 
 #crea i file delle regioni
 if [ "$WBZ2" ] || [ "$WPBF" ] ; then
-    #crea i file per le regioni
     regioni
     #sposta i file da scaricare
-    mv -f output_img/*.osm.* output_osm_regioni/
+    #mv -f output_img/*.osm.* output_osm_regioni/
 fi
-#crea il file della regione
+#crea i file della regione scelta
 if [ "$REGION" ] ; then
-    #crea i file per le regioni
     regione
 fi
-#crea il file dell'italia
+#crea i file dell'italia
 if [ "$ITALY" ] || [ "$HIKING" ]  || [ "$CYCLING" ]; then
-    #crea i file per l'italia
     italia
 fi
 
