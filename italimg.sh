@@ -67,7 +67,7 @@ Opzioni:
  regions=`find poly/*.poly -type f | cut -d'.' -f'1' | cut -d'/' -f'2' | tr '\n' ' '`
  echo "    $regions \n"
 
-#per supportare in furuto un file degli stili esterno
+#per supportare in futuro un file degli stili esterno
 #  echo " Stili accettati:"
 #   styles=""
 #   for i in `find styles/* -type d `;do
@@ -130,8 +130,6 @@ regioni()
     java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../$nome_reg.osm
     java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
         --style-file=$style_reg \
-        --net \
-        --route \
         --latin1 \
         --country-name="$name_reg" \
         --area-name="$name_reg" \
@@ -143,16 +141,15 @@ regioni()
         --generate-sea \
         --bounds=${MYPATH}/bounds \
         --max-jobs \
-        --index \
         --remove-short-arcs \
         --route \
         --drive-on=detect,right \
         --process-destination \
         --process-exits \
         --location-autofill=is_in,nearest \
+        --index \
         --x-split-name-index \
         --housenumbers \
-        --route \
         --road-name-pois \
         --add-pois-to-areas \
         --no-poi-address \
@@ -165,8 +162,8 @@ regioni()
         --reduce-point-density=3.2 \
         --gmapsupp \
         6*.osm.pbf
-	#unisce tutti i file
-	java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
+	# l'unione dei file è già avvenuta con opzione --gmapsupp
+	#java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
 	#crea il file tar.gz da scaricare e lo comprime
 	tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
 	gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
@@ -207,8 +204,6 @@ regione()
     java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../${nome_reg}.osm
     java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
         --style-file=$style_reg \
-        --net \
-        --route \
         --latin1 \
         --country-name="$name_reg" \
         --area-name="$name_reg" \
@@ -220,16 +215,15 @@ regione()
         --generate-sea \
         --bounds=${MYPATH}/bounds/ \
         --max-jobs \
-        --index \
         --remove-short-arcs \
         --route \
         --drive-on=detect,right \
         --process-destination \
         --process-exits \
         --location-autofill=is_in,nearest \
+        --index \
         --x-split-name-index \
         --housenumbers \
-        --route \
         --road-name-pois \
         --add-pois-to-areas \
         --no-poi-address \
@@ -243,13 +237,14 @@ regione()
         --gmapsupp \
         6*.osm.pbf
     #unisce tutti i file
-    java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
+    #l'unione dei file è già avvenuta con opzione --gmapsupp
+    #java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
     #crea il file tar.gz da scaricare e lo comprime
     tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
     gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
     #rimuove i singoli file
     rm gmapsupp.img
-    unset stringa
+    unset serie
     #comprime il file osm e lo mette nella cartella download
     cd ..
 #     if [ "$REGION_PBF" ] ; then
@@ -283,8 +278,6 @@ italia()
         #crea il file img
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
             --style-file=$style_it \
-            --net \
-            --route \
             --latin1 \
             --country-name="$name" \
             --country-abbr="$abbr" \
@@ -297,16 +290,15 @@ italia()
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --index \
             --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
+            --index \
             --x-split-name-index \
             --housenumbers \
-            --route \
             --road-name-pois \
             --add-pois-to-areas \
             --no-poi-address \
@@ -318,7 +310,8 @@ italia()
             --reduce-point-density=3.2 \
             --gmapsupp \
             ../../6*.osm.pbf
-        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
+	# l'unione dei file è già avvenuta con opzione --gmapsupp
+        #java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
         tar -cf ${MYPATH}/output_img/italia.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia.tar
         cd ../../
@@ -334,8 +327,6 @@ italia()
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
             --style-file=$style_escu \
             --check-roundabouts \
-            --net \
-            --route \
             --latin1 \
             --country-name="$name" \
             --country-abbr="$abbr" \
@@ -348,16 +339,15 @@ italia()
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --index \
             --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
+            --index \
             --x-split-name-index \
             --housenumbers \
-            --route \
             --road-name-pois \
             --add-pois-to-areas \
             --no-poi-address \
@@ -371,7 +361,7 @@ italia()
             --reduce-point-density=3.2 \
             --gmapsupp \
             ../../6*.osm.pbf
-        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --latin1 --index --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
         #comprime il file
         tar -cf ${MYPATH}/output_img/italia_escursionismo.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia_escursionismo.tar
@@ -388,8 +378,6 @@ italia()
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
             --style-file=$style_cycli \
             --check-roundabouts \
-            --net \
-            --route \
             --latin1 \
             --country-name="$name" \
             --country-abbr="$abbr" \
@@ -402,16 +390,15 @@ italia()
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --index \
             --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
+            --index \
             --x-split-name-index \
             --housenumbers \
-            --route \
             --road-name-pois \
             --add-pois-to-areas \
             --no-poi-address \
@@ -429,7 +416,7 @@ italia()
             --make-opposite-cycleways \
             --cycle-map \
             ../../6*.osm.pbf
-        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
+        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --latin1 --index --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
         #comprime il file
         tar -cf ${MYPATH}/output_img/italia_ciclismo.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia_ciclismo.tar
