@@ -136,10 +136,12 @@ regione()
     java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
         --style-file=$style_reg \
         --latin1 \
-        --country-name="$name_reg" \
-        --area-name="$name_reg" \
-        --family-name="OpenStreetMap: $name_reg" \
-        --description="$name_reg" \
+        --country-name=Italia \
+        --country-abbr="$abbr" \
+        --region-name="$nome_reg" \
+        --area-name="$nome_reg" \
+        --family-name="OpenStreetMap: Mappe regionali ital.img" \
+        --description="$nome_reg" \
         --series-name="$serie" \
         --precomp-sea=${MYPATH}/sea/ \
         --generate-sea \
@@ -210,11 +212,11 @@ italia()
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
             --style-file=$style_it \
             --latin1 \
-            --country-name="$name" \
+            --country-name=Italia \
             --country-abbr="$abbr" \
-            --area-name="$name" \
-            --family-name="OpenStreetMap: $name" \
-            --description="$name" \
+            --area-name=Italia \
+            --family-name="OpenStreetMap: Mappe Italia ital.img" \
+            --description=Italia \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
@@ -256,11 +258,11 @@ italia()
             --style-file=$style_escu \
             --check-roundabouts \
             --latin1 \
-            --country-name="$name" \
+            --country-name=Italia \
             --country-abbr="$abbr" \
-            --area-name="$name" \
-            --family-name="OpenStreetMap: $name" \
-            --description="$name" \
+            --area-name=Italia \
+            --family-name="OpenStreetMap: Mappe Italia ital.img" \
+            --description="Italia escursionismo" \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
@@ -304,11 +306,11 @@ italia()
             --style-file=$style_cycli \
             --check-roundabouts \
             --latin1 \
-            --country-name="$name" \
+            --country-name=Italia \
             --country-abbr="$abbr" \
-            --area-name="$name" \
-            --family-name="OpenStreetMap: $name" \
-            --description="$name" \
+            --area-name=Italia \
+            --family-name="OpenStreetMap: Mappe Italia ital.img" \
+            --description="Italia ciclismo" \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
