@@ -140,22 +140,19 @@ regione()
         --area-name="$name_reg" \
         --family-name="OpenStreetMap: $name_reg" \
         --description="$name_reg" \
-        --draw-priority=$priority \
         --series-name="$serie" \
         --precomp-sea=${MYPATH}/sea/ \
         --generate-sea \
         --bounds=${MYPATH}/bounds/ \
         --max-jobs \
-        --remove-short-arcs \
         --route \
         --drive-on=detect,right \
         --process-destination \
         --process-exits \
         --location-autofill=is_in,nearest \
         --index \
-        --x-split-name-index \
+        --split-name-index \
         --housenumbers \
-        --road-name-pois \
         --add-pois-to-areas \
         --no-poi-address \
         --link-pois-to-ways \
@@ -163,7 +160,6 @@ regione()
         --verbose \
         --name-tag-list=int_name,name,name:it \
         --draw-priority=$priority \
-        --merge-lines \
         --reduce-point-density=3.2 \
         --gmapsupp \
         6*.osm.pbf
@@ -219,29 +215,26 @@ italia()
             --area-name="$name" \
             --family-name="OpenStreetMap: $name" \
             --description="$name" \
-            --draw-priority=$priority \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
             --index \
-            --x-split-name-index \
+            --split-name-index \
             --housenumbers \
-            --road-name-pois \
             --add-pois-to-areas \
             --no-poi-address \
             --link-pois-to-ways \
             --preserve-element-order \
             --verbose \
             --name-tag-list=int_name,name,name:it \
-            --merge-lines \
+            --draw-priority=$priority \
             --reduce-point-density=3.2 \
             --gmapsupp \
             ../../6*.osm.pbf
@@ -268,31 +261,28 @@ italia()
             --area-name="$name" \
             --family-name="OpenStreetMap: $name" \
             --description="$name" \
-            --draw-priority=$priority \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
             --index \
-            --x-split-name-index \
+            --split-name-index \
             --housenumbers \
-            --road-name-pois \
             --add-pois-to-areas \
             --no-poi-address \
             --link-pois-to-ways \
             --preserve-element-order \
             --verbose \
             --name-tag-list=int_name,name,name:it \
+            --draw-priority=$priority \
             --ignore-maxspeeds \
             --ignore-turn-restrictions \
-            --merge-lines \
             --reduce-point-density=3.2 \
             --gmapsupp \
             ../../6*.osm.pbf
@@ -319,22 +309,19 @@ italia()
             --area-name="$name" \
             --family-name="OpenStreetMap: $name" \
             --description="$name" \
-            --draw-priority=$priority \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
             --index \
-            --x-split-name-index \
+            --split-name-index \
             --housenumbers \
-            --road-name-pois \
             --add-pois-to-areas \
             --no-poi-address \
             --link-pois-to-ways \
@@ -344,7 +331,6 @@ italia()
             --draw-priority=$priority \
             --ignore-maxspeeds \
             --ignore-turn-restrictions \
-            --merge-lines \
             --reduce-point-density=3.2 \
             --gmapsupp \
             --make-cycleways \
