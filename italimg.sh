@@ -26,9 +26,8 @@ DOWN=true
 #percorso al directory di lavoro
 #bisogna lanciare il comando dalla directory di italimg.sh
 MYPATH=`pwd`
+
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
-#nome della zona rappresentata default italy
-name="Italia"
 #percorso al file da scaricare deve esserci poi le estensioni pbf e/o bz2
 url="http://download.geofabrik.de/openstreetmap/europe/"
 file_name="italy-latest.osm"
@@ -41,9 +40,14 @@ style_cycli="../../styles/cycling"
 style_reg="../../../styles/gfoss"
 mkgmap="mkgmap-r4140"
 splitter="splitter-r591"
+
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
-XMX=2000M
+
+#con 16 core e file Italia, 2000M ottiene OutOfMemoryError
+#settabile da linea di comando. Es.: $ XMX=8000M ./italing.sh
+: ${XMX:-2000M}
+
 ###  FUNZIONE PER L'HELP ##
 usage()
 {
@@ -335,7 +339,6 @@ italia()
             --ignore-turn-restrictions \
             --reduce-point-density=3.2 \
             --gmapsupp \
-            --make-cycleways \
             --make-opposite-cycleways \
             --cycle-map \
             ../../6*.osm.pbf
@@ -344,12 +347,14 @@ italia()
         tar -cf ${MYPATH}/output_img/italia_ciclismo.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia_ciclismo.tar
         cd ../../
-        rm -rf tmp/italia_escu/*
+        rm -rf tmp/italia_bici/*
     fi
-    rm -f 6*.pbf
+
+    #rimozione file creati dallo splitter
+    rm -f 6*.pbf areas.list areas.poly densities-out.txt template.args
 }
 
-##### SCRIP VERO E PROPRIO #####
+##### SCRIPT VERO E PROPRIO #####
 
 ### INIZIO CODICE PRESO DA g.extension di GRASS GIS 6.4 copyrigth di Markus Neteler
 #controlla la presenza di bzcat
@@ -413,7 +418,7 @@ do
 	R ) if [ -n $OPTARG ] ; then
 		#nome della regione
 		NAMEREG=$OPTARG
-		#variabile che serve per controllare se il nome della regione ha un file poly corrispondente, di defaul false
+		#variabile che serve per controllare se il nome della regione ha un file poly corrispondente, di default false
 		REGION=0
 		#per tutti i file poly trovati nella cartella poly
 		for i in `ls -1 poly/ | cut -d'.' -f'1' | tr '\n' ' '`; do
