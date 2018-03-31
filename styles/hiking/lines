@@ -62,7 +62,7 @@ highway=service [0x06 road_class=1 road_speed=1 resolution 22 default_name 'Stra
 highway=steps {add access = no; add foot = yes} [0x16 road_class=4 road_speed=3 resolution 22 default_name 'Strada']
 highway=unsurfaced [0x0a road_class=1 road_speed=1 resolution 22 default_name 'Strada']
 
-highway=pedestrian & area!=yes {add access = no; add foot = yes} [0x04 road_class=5 road_speed=5 resolution 20]
+highway=pedestrian & area!=yes {add access = no; add foot = yes} [0x04 road_class=4 road_speed=5 resolution 20]
 # Mop up any unrecognised highway types
 highway=* & area!=yes [0x07 ]
 
