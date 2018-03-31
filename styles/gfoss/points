@@ -167,3 +167,9 @@ tourism=theme_park [0x2c01 resolution 20]
 tourism=viewpoint [0x2c04 resolution 20]
 tourism=wine_cellar [0x2c0a resolution 20]
 tourism=zoo [0x2c07 resolution 20]
+
+<finalize>
+# The finalizer section is executed for each element when a rule with an element type matches
+
+include 'inc/address';
+name=* { name '${name}' }

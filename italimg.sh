@@ -135,7 +135,8 @@ regione()
     cd $nome_reg
 
     #divide il file osm della regione se troppo grande
-    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../${nome_reg}.osm
+    # --overlap è deprecato. Non necessario perché --keep-complete=true é abilitato di default
+    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ../${nome_reg}.osm
 
     java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
         --style-file=$style_reg \
@@ -170,9 +171,6 @@ regione()
         --gmapsupp \
         6*.osm.pbf
 
-    #l'unione dei file è già avvenuta con opzione --gmapsupp
-    #java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
-
     #crea il file tar.gz da scaricare e lo comprime
     tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
     gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
@@ -199,12 +197,13 @@ regione()
 ### FUNZIONE PER CREARE IL FILE DELL'ITALIA ##
 italia()
 {
+        # --overlap è deprecato. Non necessario perché --keep-complete=true é abilitato di default
     if [ "$PBF" ] ; then
         checkfile ${file_name}.$EXT
-        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}.$EXT
+        java -Xmx${XMX} -jar $splitter/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}.$EXT
     else
         checkfile ${file_name}
-        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}
+        java -Xmx${XMX} -jar $splitter/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}
     fi
 
     #crea la mappa con lo stile gfoss
@@ -244,8 +243,8 @@ italia()
             --reduce-point-density=3.2 \
             --gmapsupp \
             ../../6*.osm.pbf
-	# l'unione dei file è già avvenuta con opzione --gmapsupp
-        #java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
+
+        #comprime il file
         tar -cf ${MYPATH}/output_img/italia.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia.tar
         cd ../../
@@ -255,7 +254,6 @@ italia()
     if [ "$HIKING" ] ; then
         #nome della mappa
         serie="Mappa italiana per escursionisti creata da ital.img"
-        #crea il nome e la stringe per l'escursionismo
         cd tmp/italia_escu
         #crea il file img con lo stile escursionismo
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
@@ -291,8 +289,9 @@ italia()
             --ignore-turn-restrictions \
             --reduce-point-density=3.2 \
             --gmapsupp \
-            ../../6*.osm.pbf
-        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --latin1 --index --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
+            ../../6*.osm.pbf \
+            ${MYPATH}/openmtbmap_it_srtm/7*.img
+
         #comprime il file
         tar -cf ${MYPATH}/output_img/italia_escursionismo.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia_escursionismo.tar
@@ -303,9 +302,8 @@ italia()
     if [ "$CYCLING" ] ; then
         #nome della mappa
         serie="Mappa italiana per ciclisti creata da ital.img"
-        #crea il nome e la stringe per l'escursionismo
         cd tmp/italia_bici
-        #crea il file img con lo stile escursionismo
+        #crea il file img con lo stile ciclismo
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
             --style-file=$style_cycli \
             --check-roundabouts \
@@ -341,8 +339,9 @@ italia()
             --gmapsupp \
             --make-opposite-cycleways \
             --cycle-map \
-            ../../6*.osm.pbf
-        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --latin1 --index --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
+            ../../6*.osm.pbf \
+            ${MYPATH}/openmtbmap_it_srtm/7*.img
+
         #comprime il file
         tar -cf ${MYPATH}/output_img/italia_ciclismo.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia_ciclismo.tar

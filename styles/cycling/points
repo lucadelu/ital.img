@@ -1,3 +1,5 @@
+addr:housenumber=* {set mkgmap:execute_finalize_rules=true}
+
 # aeroway=airport [0x5900 resolution 20]
 aeroway=airport [0x2f04 resolution 20]
 aeroway=aerodrome [0x2f04 resolution 20]
@@ -137,3 +139,9 @@ information=pistemap | (tourism=information  & information=pistemap) [0x4c00 res
 information=board | (tourism=information  & information=board) [0x4c00 resolution 20 default_name 'Tabello informativo']
 
 tourism=information  & (information!=guidepost | information!=map | information!=board | information!=pistemap) [0x4c00 resolution 18 default_name 'Ufficio informazioni']
+
+<finalize>
+# The finalizer section is executed for each element when a rule with an element type matches
+
+include 'inc/address';
+name=* { name '${name}' }

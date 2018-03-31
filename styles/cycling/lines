@@ -1,3 +1,5 @@
+addr:housenumber=* {set mkgmap:execute_finalize_rules=true}
+
 boundary=national [0x1e resolution 17]
 
 # Contours take their name from the elevation setting.
@@ -92,3 +94,9 @@ aerialway=cable_car[0x1a resolution 20 road_class=0 road_speed=0]
 #waterway=drain [0x1f resolution 20]
 #waterway=river [0x1f resolution 17]
 #waterway=stream [0x1f resolution 17]
+
+<finalize>
+# The finalizer section is executed for each element when a rule with an element type matches
+
+include 'inc/address';
+name=* { name '${name}' }
