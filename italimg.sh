@@ -46,7 +46,7 @@ priority="10"
 
 #con 16 core e file Italia, 2000M ottiene OutOfMemoryError
 #settabile da linea di comando. Es.: $ XMX=8000M ./italing.sh
-: ${XMX:-2000M}
+: ${XMX:=2000M}
 
 ###  FUNZIONE PER L'HELP ##
 usage()
@@ -54,17 +54,16 @@ usage()
   echo "Utilizzo: `basename $0` opzioni
 
 Opzioni:
-    -d          elimina file originali
-    -f		non scarica il file ${file_name}.bz2/pbf ma lo prende
-		dalla cartella in cui si trova `basename $0`
-    -p          scarica/usa file pbf
-    -r		crea i file regionali garmin e bz2
+    -d		elimina file ${file_name}.bz2/pbf al termine delle operazioni
+    -f		non scarica il file ${file_name}.bz2/pbf ma lo prende dalla cartella in cui si trova `basename $0`
+    -p		scarica/usa file pbf anziché osm.bz2
+    -r		crea i file regionali garmin e osm.bz2
     -w		crea i file regionali garmin e pbf
     -i		crea il file dell'Italia
     -e		crea il file dell'Italia con stile per escursionisti
-    -c          crea il file dell'Italia con stile per ciclisti
+    -c		crea il file dell'Italia con stile per ciclisti
     -h		visualizza questa schermata
-    -R	nome	crea i file della regione scelta in formato garmin, bz2 e pbf
+    -R	nome	crea i file della regione scelta in formato garmin, osm.bz2 e pbf
 
 Regioni accettate:
 "
@@ -189,6 +188,9 @@ regione()
     if [ "$WBZ2" ] || [ "$REGION" ]; then
 	bzip2 $nome_reg.osm
 	mv $nome_reg.osm.bz2 ${MYPATH}/output_osm_regioni/
+    else
+	#se non viene bzippato il file originale è ancora li, quindi meglio rimuoverlo
+	rm -f $nome_reg.osm
     fi
     cd ../..
     rm -rf tmp/regioni/$nome_reg
@@ -457,20 +459,20 @@ fi
 #crea i file delle regioni
 if [ "$WBZ2" ] || [ "$WPBF" ] ; then
     regioni
-    #sposta i file da scaricare
-    #mv -f output_img/*.osm.* output_osm_regioni/
 fi
+
 #crea i file della regione scelta
 if [ "$REGION" ] ; then
     regione
 fi
+
 #crea i file dell'italia
 if [ "$ITALY" ] || [ "$HIKING" ]  || [ "$CYCLING" ]; then
     italia
 fi
 
 #rimuove file originale
-if [ "$REMOVE" = true ] ; then
+if [ "$REMOVE" ] ; then
     #controlla se il file è pbf o bz2
     if [ ! "$PBF" ] ; then
         rm -f ${file_name}.bz2 ${file_name}

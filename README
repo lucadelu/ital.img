@@ -25,18 +25,17 @@ Put them inside "openmtbmap_it_srtm" folder.
 How to use
 ==========
 
-Options:
-    -d          elimina file originali
-    -f		non scarica il file italy-latest.osm.bz2/pbf ma lo prende
-		dalla cartella in cui si trova italimg.sh
-    -p          scarica/usa file pbf
-    -r		crea i file regionali garmin e bz2
-    -w		crea i file regionali garmin e pbf
-    -i		crea il file dell'Italia
-    -e		crea il file dell'Italia con stile per escursionisti
+Opzioni:
+    -d          elimina file osm.bz2/pbf al termine delle operazioni
+    -f          non scarica il file osm.bz2/pbf ma lo prende dalla cartella in cui si trova `basename $0`
+    -p          scarica/usa file pbf anziché osm.bz2
+    -r          crea i file regionali garmin e osm.bz2
+    -w          crea i file regionali garmin e pbf
+    -i          crea il file dell'Italia
+    -e          crea il file dell'Italia con stile per escursionisti
     -c          crea il file dell'Italia con stile per ciclisti
-    -h		visualizza questa schermata
-    -R	nome	crea i file della regione scelta in formato garmin, bz2 e pbf
+    -h          visualizza questa schermata
+    -R nome     crea i file della regione scelta in formato garmin, osm.bz2 e pbf
 
 
 Examples
@@ -50,13 +49,13 @@ and it will download Italian OSM data from Geofabrik repository and create the m
 of the whole Italy. Garmin output files are inside output_img folder.
 
 
-It is also possible to create splitted files of Italian regions in addition to Garmin maps.
+It is also possible to create splitted files (osm.bz2 and/or pbf) of Italian regions in addition to Garmin maps.
 They are saved into output_osm_regioni and output_img respectively.
 
       sh italimg.sh -r
       sh italimg.sh -w
 
-Or for a single region
+Or for a single region creating both osm.bz2 and pbf.
 
       sh italimg.sh -R "region"
 
