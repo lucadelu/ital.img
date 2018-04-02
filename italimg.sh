@@ -160,11 +160,10 @@ regione()
         --split-name-index \
         --housenumbers \
         --add-pois-to-areas \
-        --no-poi-address \
         --link-pois-to-ways \
         --preserve-element-order \
         --verbose \
-        --name-tag-list=int_name,name,name:it \
+        --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
         --draw-priority=$priority \
         --reduce-point-density=3.2 \
         --gmapsupp \
@@ -236,11 +235,10 @@ italia()
             --split-name-index \
             --housenumbers \
             --add-pois-to-areas \
-            --no-poi-address \
             --link-pois-to-ways \
             --preserve-element-order \
             --verbose \
-            --name-tag-list=int_name,name,name:it \
+            --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
             --draw-priority=$priority \
             --reduce-point-density=3.2 \
             --gmapsupp \
@@ -281,11 +279,10 @@ italia()
             --split-name-index \
             --housenumbers \
             --add-pois-to-areas \
-            --no-poi-address \
             --link-pois-to-ways \
             --preserve-element-order \
             --verbose \
-            --name-tag-list=int_name,name,name:it \
+            --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
             --draw-priority=$priority \
             --ignore-maxspeeds \
             --ignore-turn-restrictions \
@@ -329,11 +326,10 @@ italia()
             --split-name-index \
             --housenumbers \
             --add-pois-to-areas \
-            --no-poi-address \
             --link-pois-to-ways \
             --preserve-element-order \
             --verbose \
-            --name-tag-list=int_name,name,name:it \
+            --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
             --draw-priority=$priority \
             --ignore-maxspeeds \
             --ignore-turn-restrictions \
