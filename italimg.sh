@@ -34,10 +34,10 @@ file_name="italy-latest.osm"
 #abbreviazione della zona
 abbr="IT"
 #nome dello style
-style_it="../../styles/gfoss"
+style_it="../../styles/general"
 style_escu="../../styles/hiking"
 style_cycli="../../styles/cycling"
-style_reg="../../../styles/gfoss"
+style_reg="../../../styles/general"
 mkgmap="mkgmap-r4140"
 splitter="splitter-r591"
 
