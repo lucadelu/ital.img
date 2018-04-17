@@ -1,3 +1,5 @@
+addr:housenumber=* {set mkgmap:execute_finalize_rules=true}
+
 boundary=national [0x1e resolution 17]
 
 # Contours take their name from the elevation setting.
@@ -6,7 +8,6 @@ contour=elevation | contour_ext=elevation
 	[0x21 resolution 19]
 
 # Assign the street name for house number search
-addr:housenumber=* {set mkgmap:execute_finalize_rules=true}
 highway=* & name=* { set mkgmap:street='${name}' }
 
 # Hide proposed ways 
@@ -106,3 +107,9 @@ highway=* & ref=* { addlabel '${ref}' }
 highway=* & int_ref=* { addlabel '${int_ref}' }
 highway=* & nat_ref=* { addlabel '${nat_ref}' }
 highway=* & reg_ref=* { addlabel '${reg_ref}' }
+
+<finalize>
+# The finalizer section is executed for each element when a rule with an element type matches
+
+include 'inc/address';
+name=* { name '${name}' }

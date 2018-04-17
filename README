@@ -5,59 +5,62 @@ ital.img is licensed under the terms of GNU GPL 2
     Read LICENSE for more info
 
 
-Making Italian and other maps for Garmin GPS units
+Making Italian OSM maps for Garmin GPS units
 ==================================================
 
-ital.img is a free software to create map for Garmin GPS units using mkgmap
+ital.img is a free software to create italian maps for Garmin GPS units using mkgmap
 
-ital.img is developed to create Italian maps but it is possible to create also 
-other countries
 
-Dipendences
+Dependencies
 ============
 
-This program requires Java 1.6 or above to run.
+Check install.sh for required software and data.
+mkgmap requires Java 1.8 or above to run.
 
-First download the map of contour lines for Garmin from 
-
+Garmin contour lines are needed for cycling and hiking styles: 
 	http://geodati.fmach.it/gfoss_geodata/osm/output_osm_srtm/openmtbmap_it_srtm.zip
-
-and put it inside "openmtbmap_it_srtm" folder.
-
-Polygon files
-=============
-
-The polygon files are under Creative Commons Attribution Share-Alike 2.0 License [0] ("CloudMade Materials")
-
-[0] http://creativecommons.org/licenses/by-sa/2.0/
+Put them inside "openmtbmap_it_srtm" folder.
 
 
 How to use
 ==========
 
-Options:
-    -d          non scarica il file italy.osm.bz2/pbf ma lo prende  
-                dalla cartella in cui si trova `italimg.sh`
-    -p          scarica file pbf
-    -r          crea i file regionali
+Opzioni:
+    -d          elimina file osm.bz2/pbf al termine delle operazioni
+    -f          non scarica il file osm.bz2/pbf ma lo prende dalla cartella in cui si trova `basename $0`
+    -p          scarica/usa file pbf anziché osm.bz2
+    -r          crea i file regionali garmin e osm.bz2
+    -w          crea i file regionali garmin e pbf
     -i          crea il file dell'Italia
     -e          crea il file dell'Italia con stile per escursionisti
+    -c          crea il file dell'Italia con stile per ciclisti
     -h          visualizza questa schermata
-    -R  nome    crea il file della regione scelta
+    -R nome     crea i file della regione scelta in formato garmin, osm.bz2 e pbf
 
-To create the map for garmin of Italy you can run only 
+
+Examples
+==========
+
+To create map of Italy for Garmin you can run 
 
       sh italimg.sh -p -i
 
-and it download italian OSM data from geofabrick repository and create the map for 
-Garmin of the whole Italy and one for each region. The output files are inside 
-output_img folder.
+and it will download Italian OSM data from Geofabrik repository and create the map
+of the whole Italy. Garmin output files are inside output_img folder.
 
-It is also possible to split the whole Italian osm file into osm regional files, 
-they are saved into output_osm_regioni folder and output_img
+
+It is also possible to create splitted files (osm.bz2 and/or pbf) of Italian regions in addition to Garmin maps.
+They are saved into output_osm_regioni and output_img respectively.
 
       sh italimg.sh -r
+      sh italimg.sh -w
 
+Or for a single region creating both osm.bz2 and pbf.
+
+      sh italimg.sh -R "region"
+
+
+-not maintained-
 To create other region you download the osm file from internet (geofabrick o something else)
 and after you can run
 

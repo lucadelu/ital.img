@@ -26,9 +26,8 @@ DOWN=true
 #percorso al directory di lavoro
 #bisogna lanciare il comando dalla directory di italimg.sh
 MYPATH=`pwd`
+
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
-#nome della zona rappresentata default italy
-name="Italia"
 #percorso al file da scaricare deve esserci poi le estensioni pbf e/o bz2
 url="http://download.geofabrik.de/openstreetmap/europe/"
 file_name="italy-latest.osm"
@@ -41,33 +40,37 @@ style_cycli="../../styles/cycling"
 style_reg="../../../styles/gfoss"
 mkgmap="mkgmap-r4140"
 splitter="splitter-r591"
+
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
-XMX=2000M
+
+#con 16 core e file Italia, 2000M ottiene OutOfMemoryError
+#settabile da linea di comando. Es.: $ XMX=8000M ./italing.sh
+: ${XMX:=2000M}
+
 ###  FUNZIONE PER L'HELP ##
 usage()
 {
   echo "Utilizzo: `basename $0` opzioni
 
 Opzioni:
-    -d          elimina file originali
-    -f		non scarica il file ${file_name}.bz2/pbf ma lo prende
-		dalla cartella in cui si trova `basename $0`
-    -p          scarica/usa file pbf
-    -r		crea i file regionali bz2
-    -w		scrive file regionali pbf
+    -d		elimina file ${file_name}.bz2/pbf al termine delle operazioni
+    -f		non scarica il file ${file_name}.bz2/pbf ma lo prende dalla cartella in cui si trova `basename $0`
+    -p		scarica/usa file pbf anziché osm.bz2
+    -r		crea i file regionali garmin e osm.bz2
+    -w		crea i file regionali garmin e pbf
     -i		crea il file dell'Italia
     -e		crea il file dell'Italia con stile per escursionisti
-    -c          crea il file dell'Italia con stile per ciclisti
+    -c		crea il file dell'Italia con stile per ciclisti
     -h		visualizza questa schermata
-    -R	nome	crea il file della regione scelta in formato bz2 e pbf
+    -R	nome	crea i file della regione scelta in formato garmin, osm.bz2 e pbf
 
- Regioni accettate:
+Regioni accettate:
 "
  regions=`find poly/*.poly -type f | cut -d'.' -f'1' | cut -d'/' -f'2' | tr '\n' ' '`
- echo "    $regions \n"
+ echo -e "    $regions \n"
 
-#per supportare in furuto un file degli stili esterno
+#per supportare in futuro un file degli stili esterno
 #  echo " Stili accettati:"
 #   styles=""
 #   for i in `find styles/* -type d `;do
@@ -107,172 +110,101 @@ download()
 ### FUNZIONE PER CREARE I FILE DI TUTTE REGIONI ##
 regioni()
 {
-    for NAME in $(find poly/*.poly -type f)
-    do
-	#estrapola il nome del file poly
-	nome_reg=`basename $NAME .poly`
-
-        if [ "$PBF" ] ; then
-            osmconvert  ${file_name}.$EXT -B=$NAME > tmp/regioni/$nome_reg.osm
-        else
-            osmconvert  ${file_name} -B=$NAME > tmp/regioni/$nome_reg.osm
-        fi
-
-        cd tmp/regioni
-
-	#e crea la directory per il file diviso
-	#crea ed entra dentro la cartella
-	mkdir $nome_reg
-	cd $nome_reg
-
-	#divide il file osm della regione se troppo grande
-    serie="Mappa della regione $nome_reg creata da ital.img"
-    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../$nome_reg.osm
-    java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
-        --style-file=$style_reg \
-        --net \
-        --route \
-        --latin1 \
-        --country-name="$name_reg" \
-        --area-name="$name_reg" \
-        --family-name="OpenStreetMap: $name_reg" \
-        --description="$name_reg" \
-        --draw-priority=$priority \
-        --series-name="$serie" \
-        --precomp-sea=${MYPATH}/sea/ \
-        --generate-sea \
-        --bounds=${MYPATH}/bounds \
-        --max-jobs \
-        --index \
-        --remove-short-arcs \
-        --route \
-        --drive-on=detect,right \
-        --process-destination \
-        --process-exits \
-        --location-autofill=is_in,nearest \
-        --x-split-name-index \
-        --housenumbers \
-        --route \
-        --road-name-pois \
-        --add-pois-to-areas \
-        --no-poi-address \
-        --link-pois-to-ways \
-        --preserve-element-order \
-        --verbose \
-        --name-tag-list=int_name,name,name:it \
-        --draw-priority=$priority \
-        --merge-lines \
-        --reduce-point-density=3.2 \
-        --gmapsupp \
-        6*.osm.pbf
-	#unisce tutti i file
-	java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
-	#crea il file tar.gz da scaricare e lo comprime
-	tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
-	gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
-	unset serie
-	#comprime il file osm e lo mette nella cartella download
-        cd ..
-	if [ "$WPBF" ] ; then
-	    osmconvert $nome_reg.osm -o=$nome_reg.pbf
-	    mv $nome_reg.pbf ${MYPATH}/output_osm_regioni/
-	fi
-	if [ "$WBZ2" ] ; then
-	    bzip2 $nome_reg.osm
-	    mv $nome_reg.osm.bz2 ${MYPATH}/output_osm_regioni/
-	fi
-        cd ../..
+    for NAMEREG_poly in $(find poly/*.poly -type f) ; do
+	NAMEREG=`basename $NAMEREG_poly .poly`
+	regione
     done
-
-    rm -rf tmp/regioni/*
 }
 
 ### FUNZIONE PER CREARE IL FILE DI UNA REGIONE ##
 regione()
 {
-    NAMEREG_poly="poly/$NAMEREG.poly"
     nome_reg=$NAMEREG
-    serie="Mappa di $nome_reg creata da ital.img"
+    serie="Mappa regione $nome_reg creata da ital.img"
     #divide il file dell'italia in quello delle regioni
     if [ "$PBF" ] ; then
         osmconvert  ${file_name}.$EXT -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
     else
         osmconvert  ${file_name} -B=$NAMEREG_poly > tmp/regioni/$nome_reg.osm
     fi
-    cd tmp/regioni
+
     #crea e si sposta nella cartella della ragione
+    cd tmp/regioni
     mkdir $nome_reg
     cd $nome_reg
 
-    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt --overlap=2000 ../${nome_reg}.osm
+    #divide il file osm della regione se troppo grande
+    # --overlap è deprecato. Non necessario perché --keep-complete=true é abilitato di default
+    java -Xmx${XMX} -jar ${MYPATH}/${splitter}/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ../${nome_reg}.osm
+
     java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
         --style-file=$style_reg \
-        --net \
-        --route \
         --latin1 \
-        --country-name="$name_reg" \
-        --area-name="$name_reg" \
-        --family-name="OpenStreetMap: $name_reg" \
-        --description="$name_reg" \
-        --draw-priority=$priority \
+        --country-name=Italia \
+        --country-abbr="$abbr" \
+        --region-name="$nome_reg" \
+        --area-name="$nome_reg" \
+        --family-name="OpenStreetMap: Mappe regionali ital.img" \
+        --description="$nome_reg" \
         --series-name="$serie" \
         --precomp-sea=${MYPATH}/sea/ \
         --generate-sea \
         --bounds=${MYPATH}/bounds/ \
         --max-jobs \
-        --index \
-        --remove-short-arcs \
         --route \
         --drive-on=detect,right \
         --process-destination \
         --process-exits \
         --location-autofill=is_in,nearest \
-        --x-split-name-index \
+        --index \
+        --split-name-index \
         --housenumbers \
-        --route \
-        --road-name-pois \
         --add-pois-to-areas \
-        --no-poi-address \
         --link-pois-to-ways \
         --preserve-element-order \
         --verbose \
-        --name-tag-list=int_name,name,name:it \
+        --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
         --draw-priority=$priority \
-        --merge-lines \
         --reduce-point-density=3.2 \
         --gmapsupp \
         6*.osm.pbf
-    #unisce tutti i file
-    java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
+
     #crea il file tar.gz da scaricare e lo comprime
     tar -cf ${MYPATH}/output_img/${nome_reg}.tar gmapsupp.img ${MYPATH}/README_data.txt
     gzip -9 -f ${MYPATH}/output_img/${nome_reg}.tar
-    #rimuove i singoli file
-    rm gmapsupp.img
-    unset stringa
-    #comprime il file osm e lo mette nella cartella download
+
+    unset serie
+
+    #comprime il file e li mette nella cartella download
     cd ..
-#     if [ "$REGION_PBF" ] ; then
+
+    #crea pbf se usato -w oppure -R
+    if [ "$WPBF" ] || [ "$REGION" ]; then
 	osmconvert $nome_reg.osm -o=$nome_reg.pbf
 	mv $nome_reg.pbf ${MYPATH}/output_osm_regioni/
-#     fi
-#     if [ "$REGION_BZ2" ] ; then
+    fi
+    #crea bz2 se usato -r oppure -R
+    if [ "$WBZ2" ] || [ "$REGION" ]; then
 	bzip2 $nome_reg.osm
 	mv $nome_reg.osm.bz2 ${MYPATH}/output_osm_regioni/
-#     fi
+    else
+	#se non viene bzippato il file originale è ancora li, quindi meglio rimuoverlo
+	rm -f $nome_reg.osm
+    fi
     cd ../..
-    rm -rf tmp/regioni/*
+    rm -rf tmp/regioni/$nome_reg
 }
 
 ### FUNZIONE PER CREARE IL FILE DELL'ITALIA ##
 italia()
 {
+        # --overlap è deprecato. Non necessario perché --keep-complete=true é abilitato di default
     if [ "$PBF" ] ; then
         checkfile ${file_name}.$EXT
-        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}.$EXT
+        java -Xmx${XMX} -jar $splitter/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}.$EXT
     else
         checkfile ${file_name}
-        java -Xmx${XMX} -jar $splitter/splitter.jar --overlap=2000 --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}
+        java -Xmx${XMX} -jar $splitter/splitter.jar --max-areas=4096 --max-nodes=3000000 --wanted-admin-level=8 --geonames-file=${MYPATH}/cities15000.txt ${file_name}
     fi
 
     #crea la mappa con lo stile gfoss
@@ -283,42 +215,36 @@ italia()
         #crea il file img
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
             --style-file=$style_it \
-            --net \
-            --route \
             --latin1 \
-            --country-name="$name" \
+            --country-name=Italia \
             --country-abbr="$abbr" \
-            --area-name="$name" \
-            --family-name="OpenStreetMap: $name" \
-            --description="$name" \
-            --draw-priority=$priority \
+            --area-name=Italia \
+            --family-name="OpenStreetMap: Mappe Italia ital.img" \
+            --description=Italia \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --index \
-            --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
-            --x-split-name-index \
+            --index \
+            --split-name-index \
             --housenumbers \
-            --route \
-            --road-name-pois \
             --add-pois-to-areas \
-            --no-poi-address \
             --link-pois-to-ways \
             --preserve-element-order \
             --verbose \
-            --name-tag-list=int_name,name,name:it \
-            --merge-lines \
+            --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
+            --draw-priority=$priority \
             --reduce-point-density=3.2 \
             --gmapsupp \
             ../../6*.osm.pbf
-        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *.img
+
+        #comprime il file
         tar -cf ${MYPATH}/output_img/italia.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia.tar
         cd ../../
@@ -328,50 +254,43 @@ italia()
     if [ "$HIKING" ] ; then
         #nome della mappa
         serie="Mappa italiana per escursionisti creata da ital.img"
-        #crea il nome e la stringe per l'escursionismo
         cd tmp/italia_escu
         #crea il file img con lo stile escursionismo
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
             --style-file=$style_escu \
             --check-roundabouts \
-            --net \
-            --route \
             --latin1 \
-            --country-name="$name" \
+            --country-name=Italia \
             --country-abbr="$abbr" \
-            --area-name="$name" \
-            --family-name="OpenStreetMap: $name" \
-            --description="$name" \
-            --draw-priority=$priority \
+            --area-name=Italia \
+            --family-name="OpenStreetMap: Mappe Italia ital.img" \
+            --description="Italia escursionismo" \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --index \
-            --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
-            --x-split-name-index \
+            --index \
+            --split-name-index \
             --housenumbers \
-            --route \
-            --road-name-pois \
             --add-pois-to-areas \
-            --no-poi-address \
             --link-pois-to-ways \
             --preserve-element-order \
             --verbose \
-            --name-tag-list=int_name,name,name:it \
+            --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
+            --draw-priority=$priority \
             --ignore-maxspeeds \
             --ignore-turn-restrictions \
-            --merge-lines \
             --reduce-point-density=3.2 \
             --gmapsupp \
-            ../../6*.osm.pbf
-        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
+            ../../6*.osm.pbf \
+            ${MYPATH}/openmtbmap_it_srtm/7*.img
+
         #comprime il file
         tar -cf ${MYPATH}/output_img/italia_escursionismo.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia_escursionismo.tar
@@ -382,64 +301,57 @@ italia()
     if [ "$CYCLING" ] ; then
         #nome della mappa
         serie="Mappa italiana per ciclisti creata da ital.img"
-        #crea il nome e la stringe per l'escursionismo
         cd tmp/italia_bici
-        #crea il file img con lo stile escursionismo
+        #crea il file img con lo stile ciclismo
         java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar \
             --style-file=$style_cycli \
             --check-roundabouts \
-            --net \
-            --route \
             --latin1 \
-            --country-name="$name" \
+            --country-name=Italia \
             --country-abbr="$abbr" \
-            --area-name="$name" \
-            --family-name="OpenStreetMap: $name" \
-            --description="$name" \
-            --draw-priority=$priority \
+            --area-name=Italia \
+            --family-name="OpenStreetMap: Mappe Italia ital.img" \
+            --description="Italia ciclismo" \
             --series-name="$serie" \
             --precomp-sea=${MYPATH}/sea/ \
             --generate-sea \
             --bounds=${MYPATH}/bounds \
             --max-jobs \
-            --index \
-            --remove-short-arcs \
             --route \
             --drive-on=detect,right \
             --process-destination \
             --process-exits \
             --location-autofill=is_in,nearest \
-            --x-split-name-index \
+            --index \
+            --split-name-index \
             --housenumbers \
-            --route \
-            --road-name-pois \
             --add-pois-to-areas \
-            --no-poi-address \
             --link-pois-to-ways \
             --preserve-element-order \
             --verbose \
-            --name-tag-list=int_name,name,name:it \
+            --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
             --draw-priority=$priority \
             --ignore-maxspeeds \
             --ignore-turn-restrictions \
-            --merge-lines \
             --reduce-point-density=3.2 \
             --gmapsupp \
-            --make-cycleways \
             --make-opposite-cycleways \
             --cycle-map \
-            ../../6*.osm.pbf
-        java -Xmx${XMX} -jar ${MYPATH}/${mkgmap}/mkgmap.jar --gmapsupp *img ${MYPATH}/openmtbmap_it_srtm/*.img
+            ../../6*.osm.pbf \
+            ${MYPATH}/openmtbmap_it_srtm/7*.img
+
         #comprime il file
         tar -cf ${MYPATH}/output_img/italia_ciclismo.tar gmapsupp.img ${MYPATH}/README_data.txt
         gzip -9 -f ${MYPATH}/output_img/italia_ciclismo.tar
         cd ../../
-        rm -rf tmp/italia_escu/*
+        rm -rf tmp/italia_bici/*
     fi
-    rm -f 6*.pbf
+
+    #rimozione file creati dallo splitter
+    rm -f 6*.pbf areas.list areas.poly densities-out.txt template.args
 }
 
-##### SCRIP VERO E PROPRIO #####
+##### SCRIPT VERO E PROPRIO #####
 
 ### INIZIO CODICE PRESO DA g.extension di GRASS GIS 6.4 copyrigth di Markus Neteler
 #controlla la presenza di bzcat
@@ -503,13 +415,14 @@ do
 	R ) if [ -n $OPTARG ] ; then
 		#nome della regione
 		NAMEREG=$OPTARG
-		#variabile che serve per controllare se il nome della regione ha un file poly corrispondente, di defaul false
+		#variabile che serve per controllare se il nome della regione ha un file poly corrispondente, di default false
 		REGION=0
 		#per tutti i file poly trovati nella cartella poly
 		for i in `ls -1 poly/ | cut -d'.' -f'1' | tr '\n' ' '`; do
 		    #se il nome della regione scelta combacia con il nome considerato nel ciclo setta REGION a true e ferma il ciclo
 		    if [ "$NAMEREG" = "$i" ] ; then
-			REGION=1;
+			NAMEREG_poly="poly/$NAMEREG.poly"
+			REGION=1
 			break
 		    fi
 		done
@@ -541,24 +454,21 @@ fi
 
 #crea i file delle regioni
 if [ "$WBZ2" ] || [ "$WPBF" ] ; then
-    #crea i file per le regioni
     regioni
-    #sposta i file da scaricare
-    mv -f output_img/*.osm.* output_osm_regioni/
 fi
-#crea il file della regione
+
+#crea i file della regione scelta
 if [ "$REGION" ] ; then
-    #crea i file per le regioni
     regione
 fi
-#crea il file dell'italia
+
+#crea i file dell'italia
 if [ "$ITALY" ] || [ "$HIKING" ]  || [ "$CYCLING" ]; then
-    #crea i file per l'italia
     italia
 fi
 
 #rimuove file originale
-if [ "$REMOVE" = true ] ; then
+if [ "$REMOVE" ] ; then
     #controlla se il file è pbf o bz2
     if [ ! "$PBF" ] ; then
         rm -f ${file_name}.bz2 ${file_name}
