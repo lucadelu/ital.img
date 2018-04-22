@@ -39,9 +39,9 @@ include 'inc/access_country';
 
 # Add common access rules that are derived from the highway type
 highway=steps                              { add foot=yes; add access=no }
-highway=pedestrian & area!=yes             { add foot=yes; add access=no } 
+highway=pedestrian & area!=yes             { add foot=yes; add bicycle=yes; add access=no } 
 highway=path                               { add foot=yes; add bicycle=yes; add access=no } 
-highway=bridleway                          { add access=no }
+highway=bridleway                          { add horse=yes; add access=no }
 highway=cycleway                           { add bicycle=yes; add access=no }
 highway=footway                            { add foot=yes; add access=no }
 railway=platform                           { add foot=yes; add access=no }

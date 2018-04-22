@@ -213,7 +213,7 @@ club=sport [0x2d0a resolution 24]
 emergency=ambulance_station [0x4b00 resolution 22]
 #emergency=defibrillator
 #emergency=fire_hydrant
-#emergency=landing_site
+emergency=landing_site [0x5904 resolution 24]
 #emergency=lifeguard_base
 emergency=phone | amenity=emergency_phone [0x2f12 resolution 24 default_name 'Telefono']
 
@@ -256,12 +256,14 @@ leisure=golf_course | leisure=miniature_golf [0x2d05 resolution 24]
 leisure=ice_rink [0x2d08 resolution 24]
 leisure=marina [0x4300 resolution 24]
 leisure=park & name=* [0x2c06 resolution 24]
-leisure=pitch & name=* [0x2c08 resolution 24]
+#continue perchè potrebbe esserci un match con i tag sport sotto
+leisure=pitch & name=* [0x2c08 resolution 24 continue]
 leisure=playground & name=* [0x2c06 resolution 24]
 leisure=racetrack [0x2c00 resolution 22]
 #leisure=recreation_ground [0x2c08 resolution 24]
 leisure=slipway [0x4700 resolution 24]
-leisure=sports_centre [0x2d0a resolution 24]
+#continue perchè potrebbe esserci un match con i tag sport sotto
+leisure=sports_centre [0x2d0a resolution 24 continue]
 leisure=stadium [0x2c08 resolution 24]
 leisure=swimming_pool & name=* [0x2d09 resolution 24]
 #leisure=track [0x2c08 resolution 24] # niente poi, di solito si trova dentro centro sportivo

@@ -77,6 +77,8 @@ highway=* & (surface=asphalt | surface=paved | surface=sett |
     surface=cobblestone:flattened  | surface=metal  | surface=wood) 
     { set mkgmap:unpaved=0 }
 highway=* & tracktype=grade1 & surface!=* { set mkgmap:unpaved=0 }
+#in assenza di surface=* considera comunque pavimentato se presente segregated=yes
+highway=* & segregated=yes & surface!=* { set mkgmap:unpaved=0 }
 
 # Flag unpaved roads.
 highway=* & mkgmap:unpaved!=0 & (  
@@ -88,7 +90,9 @@ highway=* & (
     mtb:scale ~ '[2-6].' |
     sac_scale ~ '.*(mountain|alpine)_hiking')
     { set mkgmap:unpaved=1 }
-(highway=bridleway | highway=path | highway=track) & mkgmap:unpaved!=0 { add mkgmap:unpaved=1 }
+#per highway=path si assume che non è pavimentato solo se non c'è un valore forte per bicycle e foot
+highway=path &  bicycle!=designated & bicycle!=official & foot!=designated & foot!=official  & mkgmap:unpaved!=0 { add mkgmap:unpaved=1 }
+(highway=bridleway | highway=track) & mkgmap:unpaved!=0 { add mkgmap:unpaved=1 }
 highway=via_ferrata { set mkgmap:unpaved=1 }
 
 highway=* & mkgmap:unpaved!=1 & smoothness ~ '.*(intermediate|bad)'  { add mkgmap:road-speed = '-1' }
@@ -101,14 +105,25 @@ highway=* & mkgmap:fast_road!=* & (int_ref=* | network=e-road | network=AH | net
 highway=* & (access=hov | hov=designated | oneway=reversible) {set mkgmap:road-class=-2; set mkgmap:road-speed=-2; delete mkgmap:fast_road}
 
 # Convert generic path to most specific
+# conviene convertire alcuni tipi in cycleways perché così ottengono un road_speed maggiore
 highway=footway & snowplowing!=no
-& (bicycle=yes|bicycle=designated|bicycle=permissive|bicycle=official)
-{set highway=cycleway; set bicycle=yes; set foot=yes}
+& (bicycle=designated|bicycle=official)
+{set highway=cycleway; set foot=yes}
+
+highway=footway & snowplowing!=no
+& (bicycle=yes|bicycle=permissive) & segregated=yes
+{set highway=cycleway; set foot=yes}
+
 highway=path & snowplowing!=no
-& (bicycle=designated|bicycle=permissive|bicycle=official)
-{set highway=cycleway; set bicycle=yes}
-highway=path & (horse=designated|horse=permissive|horse=official)
-{set highway=bridleway; set horse=yes}
+& (bicycle=designated|bicycle=official)
+{set highway=cycleway; add foot=yes}
+
+highway=path & snowplowing!=no
+& (bicycle=yes|bicycle=permissive) & segregated=yes
+{set highway=cycleway; add foot=yes}
+
+#highway=path & (horse=designated|horse=permissive|horse=official)
+#{set highway=bridleway; set horse=yes}
 
 leisure=track & area!=yes & sport=running {add highway=footway; set mkgmap:throughroute=no}
 leisure=track & area!=yes & sport=cycling {add highway=cycleway; set mkgmap:throughroute=no}
@@ -174,7 +189,7 @@ highway=tertiary_link [0x08 road_class=1 road_speed=1 resolution 22]
 highway=unclassified [0x06 road_class=0 road_speed=3 resolution 21]
 
 # Some countries allow, others disallow bicycling on pedestrian streets.
-# To allow bicycling, add 'add bicycle=yes'
+# To allow bicycling, add 'add bicycle=yes' (aggiunto in inc/access)
 highway=pedestrian & area!=yes [0x16 road_class=0 road_speed=0 resolution 22]
 highway=living_street [0x06 road_class=0 road_speed=1 resolution 22]
 highway=residential [0x06 road_class=0 road_speed=2 resolution 22]

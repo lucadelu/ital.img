@@ -166,6 +166,7 @@ regione()
         --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
         --draw-priority=$priority \
         --reduce-point-density=3.2 \
+        --make-opposite-cycleways \
         --gmapsupp \
         6*.osm.pbf
 
