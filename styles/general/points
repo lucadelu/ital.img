@@ -10,6 +10,12 @@
 
 addr:housenumber=* {set mkgmap:execute_finalize_rules=true}
 
+# Se un oggetto ha impostato addr:city diverso dal nome del comune nel quale si trova,
+# crea un POI speciale che ha il nome del comune come città,
+# poi imposta addr:city come città per i match successivi
+addr:city=* & addr:city!=$mkgmap:admin_level8	[0x3200 continue with_actions]
+addr:city=* & addr:city!=$mkgmap:admin_level8	{ set mkgmap:city='${addr:city}' }
+
 # Restrizioni di accesso (valori no) su nodi. Utili con opzione --link-pois-to-ways
 
 barrier=* & bicycle=*    { set mkgmap:bicycle='${bicycle|subst:private=>no}' }
@@ -353,15 +359,18 @@ barrier=border_control [0x3006 resolution 22]
 include 'inc/water_points';
 include 'inc/landuse_points';
 
-# I civici con lettere o altri caratteri non sono supportati da Garmin, le lettere vengono tolte e rimane solo il numero.
+# I civici con lettere o altri caratteri non sono supportati per la ricerca, le lettere vengono tolte e rimane solo il numero.
 # Per esempio se esistono sia 40 che 40A, risultano due civici 40.
 # Se i due sono più vicini di 170 metri mkgmap fa l'unione e ne risulta solo uno in un punto intermedio.
-# Questa regola mostra il civico reale sulla mappa (se non c'è già un match per una feature precedente).
-addr:housenumber=* { name '${addr:housenumber}' }    [0x3200 resolution 24]
-#addr:housenumber=* & addr:street=* { name '${addr:housenumber}' }    [0x3200 resolution 24]
-#addr:housenumber=* & addr:place=* { name '${addr:housenumber}' }    [0x3200 resolution 24]
+# Questa regola mostra il civico reale sulla mappa (se non c'è già un match per una feature precedente)
+# ...per tutti i civici:
+#addr:housenumber=* { name '${addr:housenumber}' }    [0x3200 resolution 24]
+# ...solo per i civici addr:place:
+addr:housenumber=* & addr:place=* { name '${addr:housenumber}' }    [0x3200 resolution 24]
 
 <finalize>
 # The finalizer section is executed for each element when a rule with an element type matches
+# la prima riga evita che gli oggetti speciali creati per addr:city ottengano un nome e vengano visualizzati sulla mappa
+!(addr:city=* & addr:city!=$mkgmap:admin_level8 & mkgmap:city!=*) &
 name=* { name '${name}' }
 include 'inc/address';
