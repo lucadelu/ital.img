@@ -1,0 +1,24 @@
+#
+# This file contains information about the style.
+# It is completely optional.
+# 
+
+# Per la sintassi consultare il Conversion Style manual online:
+# http://www.mkgmap.org.uk/doc/pdf/style-manual.pdf
+
+# Fonti consultabili per i Garmin types:
+#https://wiki.openstreetmap.org/wiki/OSM_Map_On_Garmin/POI_Types
+#https://wiki.openstreetmap.org/wiki/Editing_OSM_Map_On_Garmin/Area_Types
+#https://wiki.openstreetmap.org/wiki/OSM_Map_On_Garmin/Polyline_Types
+#http://www.cferrero.net/maps/downloads/garmin_feature_list.xls
+
+# A short one line description of the style
+summary: Stile per uso generico
+
+# Version of the style itself
+version=1.0
+
+# A longer description of the style.
+description {
+Stile generico basato sullo stile default di mkgmap 4139 con adattamenti ed alcuni dettagli ripresi dallo stile gfoss.
+}

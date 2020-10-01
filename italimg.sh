@@ -34,10 +34,10 @@ file_name="italy-latest.osm"
 #abbreviazione della zona
 abbr="IT"
 #nome dello style
-style_it="../../styles/gfoss"
+style_it="../../styles/general"
 style_escu="../../styles/hiking"
 style_cycli="../../styles/cycling"
-style_reg="../../../styles/gfoss"
+style_reg="../../../styles/general"
 mkgmap="mkgmap-r4140"
 splitter="splitter-r591"
 
@@ -166,6 +166,7 @@ regione()
         --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
         --draw-priority=$priority \
         --reduce-point-density=3.2 \
+        --make-opposite-cycleways \
         --gmapsupp \
         6*.osm.pbf
 
@@ -241,6 +242,7 @@ italia()
             --name-tag-list=name,name:it,loc_name,reg_name,nat_name \
             --draw-priority=$priority \
             --reduce-point-density=3.2 \
+            --make-opposite-cycleways \
             --gmapsupp \
             ../../6*.osm.pbf
 

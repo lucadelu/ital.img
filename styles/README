@@ -1,41 +1,26 @@
+Here are styles used by the scripts to generate Garmin maps.
+Each directory contains a different style for each flavor of map generated.
 
-== This needs updating ==
+general
+	Generic style used for conventional routing maps.
 
-There are three files: garmin_feature_list.csv, osm_garmin_map.csv and
-feature_map.csv.
+hiking
+	Style used for hiking map.
 
-Currently only feature_map.csv is used within mkgmap, and the other two are
-used to generate it.  This may change though.
+cycling
+	Style used for cycling map.
 
-garmin_feature_list.csv
------------------------
+gfoss
+	Old generic style used before general style was introduced.
 
-This is list of the map features that are available on the Garmin devices.
-It is probably not complete.  It gives a way of naming the features so that
-it is easier to use.
 
-The fields are:
-1. The type of feature: point, polyline, polygon.
-2. Name for type
-3. Name for subtype (only points have a subtype)
-4. Not used
-5. The numeric code for the feature that is actually used in the map.
-6. Same but for the sub-type. (points only).
-7. A more descriptive name (not used)
 
-osm_garmin_map.csv
-------------------
+For syntax refer to the Conversion Style manual:
+	http://www.mkgmap.org.uk/doc/pdf/style-manual.pdf
 
-This is a list of OSM map features and the corresponding Garmin feature
-name.
+Some online resources available for Garmin types:
+	https://wiki.openstreetmap.org/wiki/OSM_Map_On_Garmin/POI_Types
+	https://wiki.openstreetmap.org/wiki/Editing_OSM_Map_On_Garmin/Area_Types
+	https://wiki.openstreetmap.org/wiki/OSM_Map_On_Garmin/Polyline_Types
+	http://www.cferrero.net/maps/downloads/garmin_feature_list.xls
 
-The fields are:
-1. The kind of feature on OSM: point, polyline or polygon.
-2. The OSM key name, this is taken from the first column in the table on the map
-features page on the wiki.  For example 'highway'.
-3. The OSM value.  This is taken from the second column on the map features page on
-the wiki.  For example when the key is 'highway', you might have motorway
-here.
-4. The garmin type name that should be used for the OSM feature.
-5. (points only) the garmin sub-type name that should be used for the OSM
-feature.
