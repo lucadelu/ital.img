@@ -2,8 +2,8 @@
 
 # This file is useful to install ital.img dependencies
 ### VARIABILI CHE POSSONO ESSERE MODIFICATE ##
-mkgmap="mkgmap-r4585"
-splitter="splitter-r597"
+mkgmap="mkgmap-r4905"
+splitter="splitter-r653"
 
 #ciclo per vedere le opzioni scelte
 while getopts "f" Opzione
@@ -59,26 +59,26 @@ sed -i "/mkgmap=/c\mkgmap=\"${mkgmap}\"" other_nation.sh
 sed -i "/splitter=/c\splitter=\"${splitter}\"" other_nation.sh
 
 if [ ! -d sea ]; then
-    $DOWN http://osm2.pleiades.uni-wuppertal.de/sea/latest/sea.zip
+    $DOWN https://www.thkukuk.de/osm/data/sea-latest.zip
     unzip sea.zip -d sea
     rm -f sea.zip
 else
     if [ "$FORCE" ]; then
         rm -rf sea
-        $DOWN http://osm2.pleiades.uni-wuppertal.de/sea/latest/sea.zip
+        $DOWN https://www.thkukuk.de/osm/data/sea-latest.zip
         unzip sea.zip -d sea
         rm -f sea.zip
     fi
 fi
 
 if [ ! -d bounds ]; then
-    $DOWN http://osm2.pleiades.uni-wuppertal.de/bounds/latest/bounds.zip
+    $DOWN https://www.thkukuk.de/osm/data/bounds-latest.zip
     unzip bounds.zip -d bounds
     rm -f bounds.zip
 else
     if [ "$FORCE" ]; then
         rm -rf bounds
-        $DOWN http://osm2.pleiades.uni-wuppertal.de/bounds/latest/bounds.zip
+        $DOWN https://www.thkukuk.de/osm/data/bounds-latest.zip
         unzip bounds.zip -d bounds
         rm -f bounds.zip
     fi
