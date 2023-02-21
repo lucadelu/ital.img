@@ -60,27 +60,27 @@ sed -i "/splitter=/c\splitter=\"${splitter}\"" other_nation.sh
 
 if [ ! -d sea ]; then
     $DOWN https://www.thkukuk.de/osm/data/sea-latest.zip
-    unzip sea.zip -d sea
-    rm -f sea.zip
+    unzip sea-latest.zip
+    rm -f sea-latest.zip
 else
     if [ "$FORCE" ]; then
         rm -rf sea
         $DOWN https://www.thkukuk.de/osm/data/sea-latest.zip
-        unzip sea.zip -d sea
-        rm -f sea.zip
+        unzip sea-latest.zip
+        rm -f sea-latest.zip
     fi
 fi
 
 if [ ! -d bounds ]; then
     $DOWN https://www.thkukuk.de/osm/data/bounds-latest.zip
-    unzip bounds.zip -d bounds
-    rm -f bounds.zip
+    unzip bounds-latest.zip -d bounds
+    rm -f bounds-latest.zip
 else
     if [ "$FORCE" ]; then
         rm -rf bounds
         $DOWN https://www.thkukuk.de/osm/data/bounds-latest.zip
-        unzip bounds.zip -d bounds
-        rm -f bounds.zip
+        unzip bounds-latest.zip -d bounds
+        rm -f bounds-latest.zip
     fi
 fi
 if [ ! -f cities15000.txt ]; then
