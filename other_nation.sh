@@ -18,8 +18,8 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# For large area 10GB could be not enought
-: ${XMX:=10000M}
+# For large area 10GB could be not enough
+: ${XMX:=8000M}
 
 NO_ARG=0
 #percorso al directory di lavoro
