@@ -17,7 +17,7 @@ Dependencies
 Check install.sh for required software and data.
 mkgmap requires Java 1.8 or above to run.
 
-Garmin contour lines are needed for cycling and hiking styles: 
+Garmin contour lines are needed for cycling and hiking styles:
 	http://geodati.fmach.it/gfoss_geodata/osm/output_osm_srtm/openmtbmap_it_srtm.zip
 Put them inside "openmtbmap_it_srtm" folder.
 
@@ -41,7 +41,7 @@ Opzioni:
 Examples
 ==========
 
-To create map of Italy for Garmin you can run 
+To create map of Italy for Garmin you can run
 
       sh italimg.sh -p -i
 
@@ -64,5 +64,4 @@ Or for a single region creating both osm.bz2 and pbf.
 To create other region you download the osm file from internet (geofabrick o something else)
 and after you can run
 
-      sh other_nation.sh "name_of_file_without_.osm"
-
+      sh other_area.sh "other_areas.osm/.pbf"
