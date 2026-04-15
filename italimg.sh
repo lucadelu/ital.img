@@ -18,6 +18,18 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+# CONTROLLA SOFTWARE PER LO SCARICAMENTO
+if which aria2c >/dev/null; then
+    DOWNSOFT=aria2c
+elif which wget >/dev/null; then
+    DOWNSOFT=wget
+elif which curl >/dev/null; then
+    DOWNSOFT=curl
+else
+    echo "'aria2c', 'wget' or 'curl' is required, please install one of this tool"
+    exit 1
+fi
+
 ### VARIABILI DA NON TOCCARE ##
 #per accedere all'help
 NO_ARG=0
@@ -38,8 +50,8 @@ style_it="../../styles/general"
 style_escu="../../styles/hiking"
 style_cycli="../../styles/cycling"
 style_reg="../../../styles/general"
-mkgmap="mkgmap-r4140"
-splitter="splitter-r591"
+mkgmap="mkgmap-r4916"
+splitter="splitter-r653"
 
 #assegna il livello della mappa se sul dispositivo sono presenti più mappe
 priority="10"
@@ -95,12 +107,7 @@ download()
 
     echo "Downloading ${file_name}.$EXT file..."
 
-    if [ "$USE_WGET" ] ; then
-	wget --quiet -c ${url}${file_name}.${EXT}
-    #usa curl
-    else
-	curl -silent --location ${url}${file_name}.${EXT}
-    fi
+    $DOWNSOFT ${url}${file_name}.${EXT}
 
     if [ ! "$PBF" ] ; then
         bzcat ${file_name}.$EXT > ${file_name}
